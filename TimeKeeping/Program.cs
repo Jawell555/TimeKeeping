@@ -4,73 +4,122 @@ using System.Numerics;
 
 internal class Program
 {
+
+    static DateTime[] DefaultShiftStart = new DateTime[3];
+    static DateTime[] DefaultShiftEnd = new DateTime[3];
+    static DateOnly ShiftToday = DateOnly.FromDateTime(DateTime.Now);
+    static List <string> TimeLogs = new List <string>();
+    static string log;
+
+    static DateTime InputTimeIn;
+    static DateTime InputTimeOut;
+
     static void Main(string[] args)
     {
-        TimeOnly[] ShiftingSchedule = new TimeOnly[3];
-        string[] Shifts = {"Morning", "Afternoon","Night"};
-        List<string> ShiftLogs = new List<string>();
+        Console.WriteLine("TIME KEEPING SYSTEM");
+        Console.WriteLine($"Date: {ShiftToday}\nWelcome User, ");
+        PopulateDefaultSchedules();
 
-        //DefaultShiftingSchedule
-        ShiftingSchedule[0] = new TimeOnly(6,00);
-        ShiftingSchedule[1] = new TimeOnly(14,00);
-        ShiftingSchedule[2] = new TimeOnly(22, 00);
-        
-        Console.Write("Enter Time In (HH:mm): ");
-        TimeOnly TimeInInput = TimeOnly.Parse(Console.ReadLine());
-        Console.WriteLine("Enter your Shift Schedule:\n" +
-            "[1] Morning Shift:     6AM - 2PM\n" +
-            "[2] Afternoon Shift:   2PM - 10PM\n" +
-            "[3] Night Shift:       10PM - 6AM");
-        int ShiftInput = Convert.ToInt32(Console.ReadLine())-1;
+        int TimeCheckSelect = UserTimeInOut();
 
-
-        Console.WriteLine(TimeInInput);
-        bool isLate = EmployeeLate(ShiftInput, TimeInInput, ShiftingSchedule);
-
-        
-
-        ShiftLogs.Add($"Time In: {TimeInInput}, Shift: {Shifts[ShiftInput]}, isLate?: {isLate}");
-        foreach (var log in ShiftLogs)
+        while (TimeCheckSelect == 1 || TimeCheckSelect == 2 || TimeCheckSelect ==3)
         {
-            Console.WriteLine(log);
+            Console.WriteLine($"Select Your Assigned Shift Schedule (1-3):\n" +
+                $"1. Morning: {DefaultShiftStart[0]} - {DefaultShiftEnd[0]}\n" +
+                $"2. Afternoon: {DefaultShiftStart[1]} - {DefaultShiftEnd[1]}\n" +
+                $"3. Night: {DefaultShiftStart[2]} - {DefaultShiftEnd[2]}");
+
+            int EmployeeShift = Convert.ToInt32( Console.ReadLine() )-1;
+
+            if (TimeCheckSelect == 1)
+            {
+                Console.Write("Set Time In (yyyy-MM-dd HH:mm): ");
+                InputTimeIn = DateTime.Parse(Console.ReadLine());
+                bool islate = InputTimeIn > DefaultShiftStart[EmployeeShift];
+                if (islate)
+                {
+                    TimeSpan LateHours = InputTimeIn - DefaultShiftStart[EmployeeShift];
+                    log = ($"You are {LateHours} Late.");
+                    InputLogger();
+                }
+                else
+                {
+                    TimeSpan EarlyHours = DefaultShiftStart[EmployeeShift] - InputTimeIn;
+                    log = ($"You are {EarlyHours} EarlyHours.");
+                    InputLogger();
+                }
+            }
+            else if (TimeCheckSelect == 2)
+            {
+                Console.Write("Set Time Out (yyyy-MM-dd HH:mm): ");
+                InputTimeOut = DateTime.Parse(Console.ReadLine());
+                bool isOverTime = InputTimeOut > DefaultShiftEnd[EmployeeShift];
+
+                if (isOverTime)
+                {
+                    TimeSpan WorkingTime = InputTimeOut - DefaultShiftStart[EmployeeShift];
+                    TimeSpan Overtime = InputTimeOut - DefaultShiftEnd[EmployeeShift];
+                    log = ($"You worked for {WorkingTime} and you have {Overtime} Overtime.");
+                    InputLogger();
+                }
+                else
+                {
+                    TimeSpan WorkingTime = InputTimeOut - DefaultShiftStart[EmployeeShift];
+                    TimeSpan UnderTime = DefaultShiftEnd[EmployeeShift] - InputTimeOut;
+                    log = ($"You worked for {WorkingTime} and you have {UnderTime} Undertime");
+                    InputLogger();
+                }
+            }
+            
+            
+                TimeCheckSelect = UserTimeInOut();
         }
+        
     }
-    static bool EmployeeLate(int shift, TimeOnly time, TimeOnly[] times) {
-        switch (shift)
+    static void InputLogger()
+    {
+        TimeLogs.Add(log);
+        Console.WriteLine(log);
+    }
+    static void PopulateDefaultSchedules()
+    {
+        DefaultShiftStart[0] = ShiftToday.ToDateTime(new TimeOnly(6,0,0));
+        DefaultShiftStart[1] = DefaultShiftStart[0].AddHours(8);
+        DefaultShiftStart[2] = DefaultShiftStart[1].AddHours(8);
+
+        DefaultShiftEnd[0] = DefaultShiftStart[0].AddHours(8);
+        DefaultShiftEnd[1] = DefaultShiftStart[1].AddHours(8);
+        DefaultShiftEnd[2] = DefaultShiftStart[2].AddHours(8);
+    }
+    static int UserTimeInOut()
+    {
+        Console.WriteLine("Do you want to\n1. Time In?\n2. Time Out?\n3. View Logs\n4. Exit?");
+        int TimeCheckSelect = Convert.ToInt32(Console.ReadLine());
+        switch (TimeCheckSelect)
         {
-            case 0:
-                if (time <= times[shift])
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-                break;
-            case 1:
-                if (time <= times[shift])
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+            case 1: 
+                Console.WriteLine("You have selected Time In.");
                 break;
             case 2:
-                if (!time.IsBetween(times[2], times[0]))
+                Console.WriteLine("You have selected Time Out.");
+                break;
+            case 3:
+                Console.WriteLine("You Selected View Logs:");
+                foreach (var logs in TimeLogs)
                 {
-                    return false;
+                    Console.WriteLine(logs);
                 }
-                else
-                {
-                    return true;
-                }
+                break;
+            case 4:
+                Console.WriteLine("Exiting the program.");
+                Environment.Exit(0);
                 break;
             default:
-                return false;
+                Console.WriteLine("Invalid Selection.");
+                Environment.Exit(0);
                 break;
         }
+        return TimeCheckSelect;
     }
+
 }
