@@ -13,6 +13,8 @@ internal class Program
     static string log;
     static int EmployeeShift;
     static int TimeCheckSelect;
+    static bool isTimedIn = false;
+    static int EmployeeID;
 
     static DateTime InputTimeIn;
     static DateTime InputTimeOut;
@@ -20,33 +22,65 @@ internal class Program
     static void Main(string[] args)
     {
         Console.WriteLine("TIME KEEPING SYSTEM");
-        Console.WriteLine($"Date: {ShiftToday}\nWelcome User, ");
+        Console.WriteLine($"Date: {ShiftToday}\nWelcome, ");
+        Console.WriteLine("Enter Employee ID: ");
+        EmployeeID = Convert.ToInt32(Console.ReadLine());
         PopulateDefaultSchedules();
 
         TimeCheckSelect = TimeKeepingEntry();
-
         UserChoiceChecker();
-
-    }    
-
+    }
+    static bool TimeInPass()
+    {
+        if (isTimedIn)
+        {
+            Console.WriteLine("You are already timed in.");
+            return true;
+        }
+        return false;
+    }
+    static bool TimeOutPass()
+    {
+        if (!isTimedIn)
+        {
+            Console.WriteLine("You must time in first.");
+            return true;
+        }
+        return false;
+    }
+    static void ShiftValidation(int EmployeeShift)
+    {
+        if (!(EmployeeShift <= 2 && EmployeeShift >= 0))
+        {
+            Console.WriteLine("Invalid Selection. Try Again.");
+            ShiftChoicePrompt();
+        }
+    }
     static void UserChoiceChecker()
     {
         while (TimeCheckSelect == 1 || TimeCheckSelect == 2 || TimeCheckSelect == 3)
             {
-
-
                 if (TimeCheckSelect == 1)
                 {
-                    ShiftChoicePrompt();
+                    if(TimeInPass())
+                    {
+                        TimeCheckSelect = TimeKeepingEntry();
+                        continue;
+                    }
+                ShiftChoicePrompt();
                     TimeInPrompt();
+                    
                 }
                 else if (TimeCheckSelect == 2)
                 {
-                    ShiftChoicePrompt();
+                    if(TimeOutPass())
+                    {
+                        TimeCheckSelect = TimeKeepingEntry();
+                        continue;
+                }
+                ShiftChoicePrompt();
                     TimeOutPrompt();
                 }
-
-
                 TimeCheckSelect = TimeKeepingEntry();
             }
 
@@ -59,59 +93,64 @@ internal class Program
                 $"3. Night: {DefaultShiftStart[2]} - {DefaultShiftEnd[2]}");
 
         EmployeeShift = Convert.ToInt32(Console.ReadLine()) - 1;
+        ShiftValidation(EmployeeShift);
     }
     static void TimeOutPrompt()
     {
-        Console.Write("Set Time Out (yyyy-MM-dd HH:mm): ");
-        InputTimeOut = DateTime.Parse(Console.ReadLine());
+        InputTimeOut = DateTime.Now;
+        Console.WriteLine($"Timed Out: {InputTimeOut}");
         bool isOverTime = InputTimeOut > DefaultShiftEnd[EmployeeShift];
         if (isOverTime)
         {
             OvertimeCalc();
+            isTimedIn = false;
         }
         else
         {
             UnderTimeCalc();
+            isTimedIn = false;
         }
     }
     static void TimeInPrompt()
     {
-        Console.Write("Set Time In (yyyy-MM-dd HH:mm): ");
-        InputTimeIn = DateTime.Parse(Console.ReadLine());
+        InputTimeIn = DateTime.Now;
+        Console.WriteLine($"Timed In: {InputTimeIn}");
         bool islate = InputTimeIn > DefaultShiftStart[EmployeeShift];
         if (islate)
         {
             LateCalc();
+            isTimedIn = true;
         }
         else
         {
             EarlyCalc();
+            isTimedIn = true;
         }
     }
     static void UnderTimeCalc()
     {
-        TimeSpan WorkingTime = InputTimeOut - DefaultShiftStart[EmployeeShift];
+        TimeSpan WorkingTime = InputTimeOut - InputTimeIn;
         TimeSpan UnderTime = DefaultShiftEnd[EmployeeShift] - InputTimeOut;
-        log = ($"You worked for {WorkingTime} and you have {UnderTime} Undertime");
+        log = ($"Employee {EmployeeID} Time Out: {InputTimeOut} | Working Hours: {WorkingTime}| Undertime: {UnderTime}");
         InputLogger();
     }
     static void OvertimeCalc()
     {
-        TimeSpan WorkingTime = InputTimeOut - DefaultShiftStart[EmployeeShift];
+        TimeSpan WorkingTime = InputTimeOut - InputTimeIn;
         TimeSpan Overtime = InputTimeOut - DefaultShiftEnd[EmployeeShift];
-        log = ($"You worked for {WorkingTime} and you have {Overtime} Overtime.");
+        log = ($"Employee {EmployeeID} Time Out: {InputTimeOut} | Working Hours: {WorkingTime}| Overtime: {Overtime}");
         InputLogger();
     }
     static void EarlyCalc()
     {
         TimeSpan EarlyHours = DefaultShiftStart[EmployeeShift] - InputTimeIn;
-        log = ($"You are {EarlyHours} Early.");
+        log = ($"Employee {EmployeeID} Time In: {InputTimeIn} | Early: {EarlyHours}");
         InputLogger();
     }
     static void LateCalc()
     {
         TimeSpan LateHours = InputTimeIn - DefaultShiftStart[EmployeeShift];
-        log = ($"You are {LateHours} Late.");
+        log = ($"Employee {EmployeeID} Time In: {InputTimeIn} | Late: {LateHours}");
         InputLogger();
     }
     static void InputLogger()
@@ -135,8 +174,6 @@ internal class Program
         {
             Console.WriteLine(logs);
         }
-        
-
     }
     static int TimeKeepingEntry()
     {
@@ -159,9 +196,8 @@ internal class Program
                 Environment.Exit(0);
                 break;
             default:
-                Console.WriteLine("Invalid Selection.");
-                Environment.Exit(0);
-                break;
+                Console.WriteLine("Invalid Selection. Try Again.");
+                return TimeKeepingEntry();
         }
         return TimeCheckSelect;
     }
