@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace TimeKeepingModels
 {
-    public class Employee
+    public class ShiftSchedule
     {
-        public int EmployeeID { get; set; }
         public int ShiftID { get; set; }
-        public bool IsAdmin { get; set; }
+        public DateTime ShiftStartTime { get; set; }
+        public DateTime ShiftEndTime { get; set; }
+        
     }
-   
 }
