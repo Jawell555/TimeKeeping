@@ -42,7 +42,7 @@ namespace TimeKeepingAppService
 
         public void TimeIn(int employeeID, DateTime timeInTime)
         {
-            if (EmployeeExists(employeeID)) 
+            if (!EmployeeExists(employeeID)) 
             {
                 Console.WriteLine("Employee not found.");
                 return;
