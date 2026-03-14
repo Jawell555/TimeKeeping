@@ -1,9 +1,10 @@
-﻿using TimeKeepingModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimeKeepingModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TimeKeepingDataService
 {
@@ -44,6 +45,18 @@ namespace TimeKeepingDataService
         {
             FixedSchedule.Add(shift);
         }
+        public Employee? GetEmployeeByID(int employeeID)
+        {
+            return dummyEmployee.FirstOrDefault(e => e.EmployeeID == employeeID);
+        }
+        public ShiftSchedule? GetEmployeeShift(Employee employee)
+        {
+            return FixedSchedule.FirstOrDefault(s => s.ShiftID == employee.ShiftID);
+        }
+        public TimeLogs? GetLogByDate(int employeeID, DateTime timeOutTime)
+        {
+            return LoggedTimes.FirstOrDefault(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeOutTime) && l.TimeOut == DateTime.MinValue);
         
+        }
     }
 }

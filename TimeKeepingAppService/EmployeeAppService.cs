@@ -16,27 +16,44 @@ namespace TimeKeepingAppService
         public bool EmployeeExists(int Employee)
         {
             return timeKeepingDataService.dummyEmployee.Any(e => e.EmployeeID == Employee);
+           
+        }
+        public Employee? GetEmployee(int employeeID)
+        {
+            return timeKeepingDataService.GetEmployeeByID(employeeID);
+        }
+        public ShiftSchedule? GetShiftSchedule(Employee employee)
+        {
+            return timeKeepingDataService.GetEmployeeShift(employee);
+        }
+        public bool alreadyTimedIn(int employeeID, DateTime timeInTime)
+        {
+            return timeKeepingDataService.LoggedTimes.Any(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeInTime) && l.TimeOut == DateTime.MinValue);
         }
         public bool IsAdmin(int employeeID)
         {
-            Employee employee = timeKeepingDataService.dummyEmployee.FirstOrDefault(e => e.EmployeeID == employeeID);
+            Employee employee= GetEmployee(employeeID);
             return employee != null && employee.IsAdmin;
         }
+        public TimeLogs? GetTimeLogs(int employeeID, DateTime date)
+        {
+            return timeKeepingDataService.GetLogByDate(employeeID, date);
+        }
+
         public void TimeIn(int employeeID, DateTime timeInTime)
         {
-            Employee employee = timeKeepingDataService.dummyEmployee.FirstOrDefault(e => e.EmployeeID == employeeID);
-            if (employee == null) 
+            if (EmployeeExists(employeeID)) 
             {
                 Console.WriteLine("Employee not found.");
                 return;
             }
-            bool alreadyTimedIn = timeKeepingDataService.LoggedTimes.Any(log => log.EmployeeID == employeeID && log.Date == DateOnly.FromDateTime(timeInTime) && log.TimeOut == DateTime.MinValue);
-            if (alreadyTimedIn)
+            if (alreadyTimedIn(employeeID,timeInTime))
             {
                 Console.WriteLine("You already timed in.");
                 return;
             }
-            ShiftSchedule shift = timeKeepingDataService.FixedSchedule.FirstOrDefault(s => s.ShiftID == employee.ShiftID);
+            Employee employee = GetEmployee(employeeID);
+            ShiftSchedule shift = GetShiftSchedule(employee);
 
             TimeSpan late = TimeSpan.Zero;
             if (timeInTime > shift.ShiftStartTime)
@@ -53,25 +70,25 @@ namespace TimeKeepingAppService
             public void TimeOut(int employeeID, DateTime timeOutTime)
             {
 
-                TimeLogs log = timeKeepingDataService.LoggedTimes.FirstOrDefault(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeOutTime) && l.TimeOut == DateTime.MinValue);
-                if (log == null)
+                TimeLogs log = GetTimeLogs(employeeID, timeOutTime);
+            if (log == null)
                 {
                     Console.WriteLine("You must time in first.");
                     return;
                 }
                 
-                Employee employee = timeKeepingDataService.dummyEmployee.First(e => e.EmployeeID == employeeID);
-                ShiftSchedule shift = timeKeepingDataService.FixedSchedule.First(s => s.ShiftID == employee.ShiftID);
-                log.TimeOut = timeOutTime;
-                log.WorkingHours = timeOutTime - log.TimeIn;
+            Employee employee = GetEmployee(employeeID);
+            ShiftSchedule shift = GetShiftSchedule(employee);
+            log.TimeOut = timeOutTime;
+            log.WorkingHours = timeOutTime - log.TimeIn;
 
             if (timeOutTime > shift.ShiftEndTime)
             {
-                log.OvertimeHours = timeOutTime - shift.ShiftEndTime;
+                log.OvertimeHours = calcOvertime(shift.ShiftEndTime, timeOutTime);
             }
             else if (timeOutTime < shift.ShiftEndTime)
             {
-                log.UndertimeHours = shift.ShiftEndTime - timeOutTime;
+                log.UndertimeHours = calcUndertime(shift.ShiftEndTime, timeOutTime);
             }
 
             Console.WriteLine($"Employee {employeeID} timed out at {timeOutTime}. Working Hours: {log.WorkingHours}");
@@ -84,15 +101,22 @@ namespace TimeKeepingAppService
                 Console.WriteLine("No logs to display.\n");
                 return;
             }
-            
+
             foreach (var l in timeKeepingDataService.LoggedTimes)
-                {
-                    Console.WriteLine($"Employee ID: {l.EmployeeID}, Date: {l.Date}, Time In: {l.TimeIn:hh\\:mm}, Time Out: {(l.TimeOut!= DateTime.MinValue? (l.TimeOut): "Ongoing" )}, Working Hours: {l.WorkingHours:hh\\:mm}, Late: {l.LateHours:hh\\:mm}, OT: {l.OvertimeHours:hh\\:mm}");
-                }
+            {
+                Console.WriteLine($"Employee ID: {l.EmployeeID}, Date: {l.Date}, Time In: {l.TimeIn:hh\\:mm}, Time Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, Working Hours: {l.WorkingHours:hh\\:mm}, Late: {l.LateHours:hh\\:mm}, OT: {l.OvertimeHours:hh\\:mm}");
+            }
             Console.WriteLine("---------------------\n");
-            
-
-
+        }
+        public TimeSpan calcUndertime(DateTime endTime, DateTime timeOut)
+        {
+            TimeSpan Undertime = endTime - timeOut;
+            return Undertime;
+        }
+        public TimeSpan calcOvertime(DateTime endTime, DateTime timeOut)
+        {
+            TimeSpan Overtime = timeOut - endTime;
+            return Overtime;
         }
     }
 }
