@@ -39,74 +39,13 @@ namespace TimeKeepingAppService
         {
             return timeKeepingDataService.GetLogByDate(employeeID, date);
         }
-
-        public void TimeIn(int employeeID, DateTime timeInTime)
+        public void AddTimeLog(TimeLogs log)
         {
-            if (!EmployeeExists(employeeID)) 
-            {
-                Console.WriteLine("Employee not found.");
-                return;
-            }
-            if (alreadyTimedIn(employeeID,timeInTime))
-            {
-                Console.WriteLine("You already timed in.");
-                return;
-            }
-            Employee employee = GetEmployee(employeeID);
-            ShiftSchedule shift = GetShiftSchedule(employee);
-
-            TimeSpan late = TimeSpan.Zero;
-            if (timeInTime > shift.ShiftStartTime)
-            {
-                late = timeInTime - shift.ShiftStartTime;
-            }
-            
-            TimeLogs newLog = new TimeLogs { EmployeeID = employeeID,Date = DateOnly.FromDateTime(timeInTime), TimeIn = timeInTime, LateHours = late};
-
-            timeKeepingDataService.LoggedTimes.Add(newLog);
-            Console.WriteLine($"Employee {employeeID} timed in at {timeInTime}. Late: {late}");
+            timeKeepingDataService.Add(log);
         }
-
-            public void TimeOut(int employeeID, DateTime timeOutTime)
-            {
-
-                TimeLogs log = GetTimeLogs(employeeID, timeOutTime);
-            if (log == null)
-                {
-                    Console.WriteLine("You must time in first.");
-                    return;
-                }
-                
-            Employee employee = GetEmployee(employeeID);
-            ShiftSchedule shift = GetShiftSchedule(employee);
-            log.TimeOut = timeOutTime;
-            log.WorkingHours = timeOutTime - log.TimeIn;
-
-            if (timeOutTime > shift.ShiftEndTime)
-            {
-                log.OvertimeHours = calcOvertime(shift.ShiftEndTime, timeOutTime);
-            }
-            else if (timeOutTime < shift.ShiftEndTime)
-            {
-                log.UndertimeHours = calcUndertime(shift.ShiftEndTime, timeOutTime);
-            }
-
-            Console.WriteLine($"Employee {employeeID} timed out at {timeOutTime}. Working Hours: {log.WorkingHours}");
-        }
-        public void ViewLogs()
+        public List<TimeLogs> GetAllLogs()
         {
-            Console.WriteLine("-----TIME LOGS-----");
-            if (!timeKeepingDataService.LoggedTimes.Any())
-            {
-                Console.WriteLine("No logs to display.\n");
-                return;
-            }
-
-            foreach (var l in timeKeepingDataService.LoggedTimes)
-            {
-                Console.WriteLine($"Employee ID: {l.EmployeeID}, Date: {l.Date}, Time In: {l.TimeIn:hh\\:mm}, Time Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, Working Hours: {l.WorkingHours:hh\\:mm}, Late: {l.LateHours:hh\\:mm}, OT: {l.OvertimeHours:hh\\:mm}");
-            }
-            Console.WriteLine("---------------------\n");
+            return timeKeepingDataService.GetAllLogs();
         }
         public TimeSpan calcUndertime(DateTime endTime, DateTime timeOut)
         {
@@ -117,6 +56,19 @@ namespace TimeKeepingAppService
         {
             TimeSpan Overtime = timeOut - endTime;
             return Overtime;
+        }
+        public TimeSpan calcLate(DateTime startTime, DateTime timeIn)
+        {
+            TimeSpan late = TimeSpan.Zero;
+            if (timeIn > startTime)
+            {
+                late = timeIn - startTime;
+            }
+            return late;
+        }
+        public TimeSpan calcWorkingHours(DateTime timeIn, DateTime timeOut)
+        {
+            return timeOut - timeIn;
         }
     }
 }

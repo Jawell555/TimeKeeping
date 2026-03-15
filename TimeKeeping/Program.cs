@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Numerics;
 using TimeKeepingAppService;
+using TimeKeepingModels;
 
 internal class Program
 {
@@ -18,14 +19,14 @@ internal class Program
     static void TimeInOutDisplay()
     {
         bool isAdmin = appService.IsAdmin(currentEmployeeID);
-        Console.WriteLine($"Welcome, Employee {currentEmployeeID}");
+        Console.WriteLine($"\nWelcome, Employee {currentEmployeeID}");
         Console.WriteLine("\nDo you want to:\n" +
             "1. Time In\n" +
             "2. Time Out");
 
         if (isAdmin)
         {
-            Console.Write("3. View Logs\n");
+            Console.WriteLine("3. View Logs");
         }
 
         Console.WriteLine("4. Exit");
@@ -41,7 +42,7 @@ internal class Program
             case 3:
                 if (isAdmin)
                 {
-                    appService.ViewLogs();
+                    ViewLogs();
                 }
                 else
                 {
@@ -49,10 +50,10 @@ internal class Program
                 }
                 break;
             case 1:
-                appService.TimeIn(currentEmployeeID, DateTime.Now);
+                TimeIn(currentEmployeeID, DateTime.Now);
                 break;
             case 2:
-                appService.TimeOut(currentEmployeeID, DateTime.Now);
+                TimeOut(currentEmployeeID, DateTime.Now);
                 break;
             default:
                 Console.WriteLine("Invalid Selection. Try Again");
@@ -79,7 +80,7 @@ internal class Program
         {
             Console.WriteLine("----- TIME KEEPING SYSTEM -----");
             Console.WriteLine($"{dateToday}");
-            Console.WriteLine("Enter EmployeeID: ");
+            Console.Write("Enter EmployeeID: ");
             currentEmployeeID = employeeIdValidation();
             if (currentEmployeeID==-1)
             {
@@ -88,5 +89,69 @@ internal class Program
             TimeInOutDisplay();
         }
     }
-   
+    static void TimeIn(int employeeID, DateTime timeInTime)
+    {
+        if (!appService.EmployeeExists(employeeID))
+        {
+            Console.WriteLine("\nEmployee not found.");
+            return;
+        }
+        if (appService.alreadyTimedIn(employeeID, timeInTime))
+        {
+            Console.WriteLine("\nYou already timed in.");
+            return;
+
+        }
+        Employee employee = appService.GetEmployee(employeeID);
+        ShiftSchedule shift = appService.GetShiftSchedule(employee);
+
+        TimeSpan late = appService.calcLate(shift.ShiftStartTime, timeInTime);
+
+        TimeLogs newLog = new TimeLogs { EmployeeID = employeeID, Date = DateOnly.FromDateTime(timeInTime), TimeIn = timeInTime, LateHours = late };
+
+        appService.AddTimeLog(newLog);
+        Console.WriteLine($"\nEmployee {employeeID} timed in at {timeInTime}. Late: {late:hh\\:mm\\:ss}\n");
+    }
+    static void TimeOut(int employeeID, DateTime timeOutTime)
+    {
+
+        TimeLogs log = appService.GetTimeLogs(employeeID, timeOutTime);
+        if (log == null)
+        {
+            Console.WriteLine("\nYou must time in first.");
+            return;
+        }
+
+        Employee employee = appService.GetEmployee(employeeID);
+        ShiftSchedule shift = appService.GetShiftSchedule(employee);
+        log.TimeOut = timeOutTime;
+        log.WorkingHours = appService.calcWorkingHours(log.TimeIn, timeOutTime);
+
+        if (timeOutTime > shift.ShiftEndTime)
+        {
+            log.OvertimeHours = appService.calcOvertime(shift.ShiftEndTime, timeOutTime);
+        }
+        else if (timeOutTime < shift.ShiftEndTime)
+        {
+            log.UndertimeHours = appService.calcUndertime(shift.ShiftEndTime, timeOutTime);
+        }
+
+        Console.WriteLine($"\nEmployee {employeeID} timed out at {timeOutTime}. Working Hours: {log.WorkingHours:hh\\:mm\\:ss}\n");
+    }
+    static void ViewLogs()
+    {
+        var timeLogs = appService.GetAllLogs();
+        Console.WriteLine("\n-----TIME LOGS-----");
+        if (!timeLogs.Any())
+        {
+            Console.WriteLine("No logs to display.\n");
+            return;
+        }
+
+        foreach (var l in timeLogs)
+        {
+            Console.WriteLine($"Employee ID: {l.EmployeeID}, Date: {l.Date}, Time In: {l.TimeIn:HH\\:mm}, Time Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, Working Hours: {l.WorkingHours:hh\\:mm\\:ss}, Late: {l.LateHours:hh\\:mm\\:ss}, OT: {l.OvertimeHours:hh\\:mm\\:ss}");
+        }
+        Console.WriteLine("---------------------\n");
+    }
 }

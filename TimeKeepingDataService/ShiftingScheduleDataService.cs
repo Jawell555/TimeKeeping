@@ -45,6 +45,10 @@ namespace TimeKeepingDataService
         {
             FixedSchedule.Add(shift);
         }
+        public void Add(TimeLogs timeLog)
+        {
+            LoggedTimes.Add(timeLog);
+        }
         public Employee? GetEmployeeByID(int employeeID)
         {
             return dummyEmployee.FirstOrDefault(e => e.EmployeeID == employeeID);
@@ -57,6 +61,10 @@ namespace TimeKeepingDataService
         {
             return LoggedTimes.FirstOrDefault(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeOutTime) && l.TimeOut == DateTime.MinValue);
         
+        }
+        public List<TimeLogs> GetAllLogs()
+        {
+                       return LoggedTimes;
         }
     }
 }
