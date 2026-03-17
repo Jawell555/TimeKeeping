@@ -91,12 +91,7 @@ internal class Program
     }
     static void TimeIn(int employeeID, DateTime timeInTime)
     {
-        if (!appService.EmployeeExists(employeeID))
-        {
-            Console.WriteLine("\nEmployee not found.");
-            return;
-        }
-        if (appService.alreadyTimedIn(employeeID, timeInTime))
+        if (appService.AlreadyTimedIn(employeeID, timeInTime))
         {
             Console.WriteLine("\nYou already timed in.");
             return;
@@ -107,10 +102,10 @@ internal class Program
 
         TimeSpan late = appService.calcLate(shift.ShiftStartTime, timeInTime);
 
-        TimeLogs newLog = new TimeLogs { EmployeeID = employeeID, Date = DateOnly.FromDateTime(timeInTime), TimeIn = timeInTime, LateHours = late };
+        TimeLogs newLog = new TimeLogs { EmployeeID = employeeID, ShiftName = shift.ShiftName ,Date = DateOnly.FromDateTime(timeInTime), TimeIn = timeInTime, LateHours = late };
 
         appService.AddTimeLog(newLog);
-        Console.WriteLine($"\nEmployee {employeeID} timed in at {timeInTime}. Late: {late:hh\\:mm\\:ss}\n");
+        Console.WriteLine($"\nEmployee {employeeID}, is {shift.ShiftName}. Timed in at {timeInTime}. Late: {late:hh\\:mm\\:ss}\n");
     }
     static void TimeOut(int employeeID, DateTime timeOutTime)
     {
@@ -135,7 +130,7 @@ internal class Program
         {
             log.UndertimeHours = appService.calcUndertime(shift.ShiftEndTime, timeOutTime);
         }
-
+        appService.UpdateLog(log);
         Console.WriteLine($"\nEmployee {employeeID} timed out at {timeOutTime}. Working Hours: {log.WorkingHours:hh\\:mm\\:ss}\n");
     }
     static void ViewLogs()
@@ -150,7 +145,7 @@ internal class Program
 
         foreach (var l in timeLogs)
         {
-            Console.WriteLine($"Employee ID: {l.EmployeeID}, Date: {l.Date}, Time In: {l.TimeIn:HH\\:mm}, Time Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, Working Hours: {l.WorkingHours:hh\\:mm\\:ss}, Late: {l.LateHours:hh\\:mm\\:ss}, OT: {l.OvertimeHours:hh\\:mm\\:ss}");
+            Console.WriteLine($"Employee ID: {l.EmployeeID}, Date: {l.Date}, Shift: {l.ShiftName}, Time In: {l.TimeIn:HH\\:mm}, Time Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, Working Hours: {l.WorkingHours:hh\\:mm\\:ss}, Late: {l.LateHours:hh\\:mm\\:ss}, OT: {l.OvertimeHours:hh\\:mm\\:ss}");
         }
         Console.WriteLine("---------------------\n");
     }

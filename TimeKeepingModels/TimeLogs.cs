@@ -9,6 +9,7 @@ namespace TimeKeepingModels
     public class TimeLogs
     {
         public int EmployeeID { get; set; }
+        public string ShiftName { get; set; }
         public DateOnly Date { get; set; }
         public DateTime TimeIn { get; set; }
         public DateTime TimeOut { get; set; }

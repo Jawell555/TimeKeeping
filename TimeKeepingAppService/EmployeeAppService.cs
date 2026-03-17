@@ -11,13 +11,17 @@ namespace TimeKeepingAppService
     
     public class EmployeeAppService
     {
-        ShiftingScheduleDataService timeKeepingDataService = new ShiftingScheduleDataService();
-
-        public bool EmployeeExists(int Employee)
+        //ShiftingScheduleDataService timeKeepingDataService = new ShiftingScheduleDataService();
+        EmployeeShiftingJsonData timeKeepingDataService = new EmployeeShiftingJsonData();
+        public EmployeeAppService()
         {
-            return timeKeepingDataService.dummyEmployee.Any(e => e.EmployeeID == Employee);
-           
+            EmployeeShiftingJsonData jsonData = new EmployeeShiftingJsonData();
         }
+        //public bool EmployeeExists(int Employee)
+        //{
+        //    return timeKeepingDataService.dummyEmployee.Any(e => e.EmployeeID == Employee);
+           
+        //}
         public Employee? GetEmployee(int employeeID)
         {
             return timeKeepingDataService.GetEmployeeByID(employeeID);
@@ -26,9 +30,18 @@ namespace TimeKeepingAppService
         {
             return timeKeepingDataService.GetEmployeeShift(employee);
         }
-        public bool alreadyTimedIn(int employeeID, DateTime timeInTime)
+        //public bool alreadyTimedIn(int employeeID, DateTime timeInTime)
+        //{
+        //    return timeKeepingDataService.LoggedTimes.Any(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeInTime) && l.TimeOut == DateTime.MinValue);
+        //}
+
+        public bool EmployeeExists(int employeeID)
         {
-            return timeKeepingDataService.LoggedTimes.Any(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeInTime) && l.TimeOut == DateTime.MinValue);
+            return timeKeepingDataService.EmployeeExists(employeeID);
+        }
+        public bool AlreadyTimedIn(int employeeID, DateTime timeInTime)
+        {
+            return timeKeepingDataService.AlreadyTimedIn(employeeID, timeInTime);
         }
         public bool IsAdmin(int employeeID)
         {
@@ -38,6 +51,10 @@ namespace TimeKeepingAppService
         public TimeLogs? GetTimeLogs(int employeeID, DateTime date)
         {
             return timeKeepingDataService.GetLogByDate(employeeID, date);
+        }
+        public void UpdateLog(TimeLogs log)
+        {
+            timeKeepingDataService.UpdateTimeLog(log);
         }
         public void AddTimeLog(TimeLogs log)
         {

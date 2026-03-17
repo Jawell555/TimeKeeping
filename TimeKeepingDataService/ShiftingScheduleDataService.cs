@@ -21,9 +21,9 @@ namespace TimeKeepingDataService
             DateTime shiftStart2 = shiftStart1.AddHours(8);
             DateTime shiftStart3 = shiftStart2.AddHours(8);
 
-            ShiftSchedule morningShift = new ShiftSchedule { ShiftID = 1, ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart1.AddHours(8) };
-            ShiftSchedule afternoonShift = new ShiftSchedule { ShiftID = 2, ShiftStartTime = shiftStart2, ShiftEndTime = shiftStart2.AddHours(8) };
-            ShiftSchedule nightShift = new ShiftSchedule { ShiftID = 3, ShiftStartTime = shiftStart3, ShiftEndTime = shiftStart3.AddHours(8) };
+            ShiftSchedule morningShift = new ShiftSchedule { ShiftID = 1, ShiftName = "Morning",ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart1.AddHours(8) };
+            ShiftSchedule afternoonShift = new ShiftSchedule { ShiftID = 2, ShiftName = "Afternoon", ShiftStartTime = shiftStart2, ShiftEndTime = shiftStart2.AddHours(8) };
+            ShiftSchedule nightShift = new ShiftSchedule { ShiftID = 3, ShiftName = "Night", ShiftStartTime = shiftStart3, ShiftEndTime = shiftStart3.AddHours(8) };
 
             FixedSchedule.Add(morningShift);
             FixedSchedule.Add(afternoonShift);
@@ -36,6 +36,15 @@ namespace TimeKeepingDataService
             dummyEmployee.Add(admin);
             dummyEmployee.Add(employee1);
             dummyEmployee.Add(employee2);
+        }
+        public bool AlreadyTimedIn(int employeeID, DateTime timeInTime)
+        {
+            return LoggedTimes.Any(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeInTime) && l.TimeOut == DateTime.MinValue);
+        }
+        public bool EmployeeExists(int Employee)
+        {
+            return dummyEmployee.Any(e => e.EmployeeID == Employee);
+
         }
         public void Add(Employee employee)
         {
@@ -61,6 +70,19 @@ namespace TimeKeepingDataService
         {
             return LoggedTimes.FirstOrDefault(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeOutTime) && l.TimeOut == DateTime.MinValue);
         
+        }
+        public void UpdateTimeLog(TimeLogs log)
+        {
+            var existingLog = LoggedTimes.FirstOrDefault(l => l.EmployeeID == log.EmployeeID && l.Date == log.Date);
+            if (existingLog != null)
+            {
+                existingLog.TimeIn = log.TimeIn;
+                existingLog.TimeOut = log.TimeOut;
+                existingLog.WorkingHours = log.WorkingHours;
+                existingLog.LateHours = log.LateHours;
+                existingLog.OvertimeHours = log.OvertimeHours;
+                existingLog.UndertimeHours = log.UndertimeHours;
+            }
         }
         public List<TimeLogs> GetAllLogs()
         {
