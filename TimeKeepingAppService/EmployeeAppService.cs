@@ -1,4 +1,4 @@
-﻿using TimeKeepingDataService;
+﻿using TimeKeepingManagementDataService;
 using TimeKeepingModels;
 using System;
 using System.Collections.Generic;
@@ -12,16 +12,13 @@ namespace TimeKeepingAppService
     public class EmployeeAppService
     {
         //ShiftingScheduleDataService timeKeepingDataService = new ShiftingScheduleDataService();
-        EmployeeShiftingJsonData timeKeepingDataService = new EmployeeShiftingJsonData();
+        //EmployeeShiftingJsonData timeKeepingDataService = new EmployeeShiftingJsonData();
+        ITimeKeepingDataService timeKeepingDataService = new EmployeeShiftingJsonData();
         public EmployeeAppService()
         {
             EmployeeShiftingJsonData jsonData = new EmployeeShiftingJsonData();
         }
-        //public bool EmployeeExists(int Employee)
-        //{
-        //    return timeKeepingDataService.dummyEmployee.Any(e => e.EmployeeID == Employee);
-           
-        //}
+        
         public Employee? GetEmployee(int employeeID)
         {
             return timeKeepingDataService.GetEmployeeByID(employeeID);
@@ -30,10 +27,7 @@ namespace TimeKeepingAppService
         {
             return timeKeepingDataService.GetEmployeeShift(employee);
         }
-        //public bool alreadyTimedIn(int employeeID, DateTime timeInTime)
-        //{
-        //    return timeKeepingDataService.LoggedTimes.Any(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeInTime) && l.TimeOut == DateTime.MinValue);
-        //}
+        
 
         public bool EmployeeExists(int employeeID)
         {

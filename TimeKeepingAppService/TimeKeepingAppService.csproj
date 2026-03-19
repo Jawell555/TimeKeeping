@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TimeKeepingDataService\TimeKeepingDataService.csproj" />
+    <ProjectReference Include="..\TimeKeepingDataService\TimeKeepingManagementDataService.csproj" />
     <ProjectReference Include="..\TimeKeepingModels\TimeKeepingModels.csproj" />
   </ItemGroup>
 

@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeeping", "TimeKeeping.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeepingAppService", "..\TimeKeepingAppService\TimeKeepingAppService.csproj", "{495ABD1F-1A96-4503-90EE-8213F99799FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeepingDataService", "..\TimeKeepingDataService\TimeKeepingDataService.csproj", "{7B243026-CAF9-421B-A453-38D8EF5E05B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeepingManagementDataService", "..\TimeKeepingDataService\TimeKeepingManagementDataService.csproj", "{7B243026-CAF9-421B-A453-38D8EF5E05B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeKeepingModels", "..\TimeKeepingModels\TimeKeepingModels.csproj", "{866C9B1A-D681-4DF3-956F-BAE484C866F5}"
 EndProject

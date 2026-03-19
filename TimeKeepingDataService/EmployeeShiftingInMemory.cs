@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using TimeKeepingModels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace TimeKeepingDataService
+namespace TimeKeepingManagementDataService
 {
-    public class ShiftingScheduleDataService
+    public class EmployeeShiftingInMemory : ITimeKeepingDataService
     {
         public List<Employee> dummyEmployee = new List<Employee>();
         public List<ShiftSchedule> FixedSchedule = new List<ShiftSchedule>();
         public List<TimeLogs> LoggedTimes = new List<TimeLogs>();
 
-        public ShiftingScheduleDataService()
+        public EmployeeShiftingInMemory()
         {
             DateOnly today = DateOnly.FromDateTime(DateTime.Now);
             DateTime shiftStart1 = today.ToDateTime(new TimeOnly(6, 0));

@@ -6,9 +6,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using TimeKeepingModels;
 
-namespace TimeKeepingDataService
+namespace TimeKeepingManagementDataService
 {
-    public class EmployeeShiftingJsonData
+    public class EmployeeShiftingJsonData : ITimeKeepingDataService
     {
         public List<Employee> Employees = new List<Employee>();
         private List<ShiftSchedule> ShiftSchedules = new List<ShiftSchedule>();
@@ -83,9 +83,6 @@ namespace TimeKeepingDataService
             return Employees.Any(e => e.EmployeeID == Employee);
 
         }
-
-
-
         private void PopulateJsonFiles()
         {
             RetrieveEmployeeDataFromJsonFile();
@@ -139,7 +136,6 @@ namespace TimeKeepingDataService
                 JsonSerializer.Serialize<List<ShiftSchedule>>(new Utf8JsonWriter(outputStream, new JsonWriterOptions { SkipValidation = true, Indented = true }), ShiftSchedules);
             }
         }
-
         private void SaveEmployeeDataToJsonFiles()
         {
             using (var outputStream = File.OpenWrite(this._employeeJsonFilePath))
@@ -147,7 +143,6 @@ namespace TimeKeepingDataService
                 JsonSerializer.Serialize<List<Employee>>(new Utf8JsonWriter(outputStream, new JsonWriterOptions { SkipValidation = true, Indented = true}),Employees);
             }
         }
-
         private void RetrieveShiftingDataFromJsonFile()
         {
             using (var jsonFileReader = File.OpenText(this._shiftingJsonFilePath))
