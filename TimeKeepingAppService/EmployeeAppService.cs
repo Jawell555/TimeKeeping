@@ -11,14 +11,10 @@ namespace TimeKeepingAppService
     
     public class EmployeeAppService
     {
-        //ShiftingScheduleDataService timeKeepingDataService = new ShiftingScheduleDataService();
-        //EmployeeShiftingJsonData timeKeepingDataService = new EmployeeShiftingJsonData();
-        ITimeKeepingDataService timeKeepingDataService = new EmployeeShiftingJsonData();
-        public EmployeeAppService()
-        {
-            EmployeeShiftingJsonData jsonData = new EmployeeShiftingJsonData();
-        }
         
+        TimeKeepingDataService timeKeepingDataService = new TimeKeepingDataService(new EmployeeShiftingDBData());
+       
+
         public Employee? GetEmployee(int employeeID)
         {
             return timeKeepingDataService.GetEmployeeByID(employeeID);
@@ -52,18 +48,18 @@ namespace TimeKeepingAppService
         }
         public void AddTimeLog(TimeLogs log)
         {
-            timeKeepingDataService.Add(log);
+            timeKeepingDataService.AddTimeLog(log);
         }
         public List<TimeLogs> GetAllLogs()
         {
             return timeKeepingDataService.GetAllLogs();
         }
-        public TimeSpan calcUndertime(DateTime endTime, DateTime timeOut)
+        public TimeSpan calcUndertime(TimeSpan endTime, TimeSpan timeOut)
         {
             TimeSpan Undertime = endTime - timeOut;
             return Undertime;
         }
-        public TimeSpan calcOvertime(DateTime endTime, DateTime timeOut)
+        public TimeSpan calcOvertime(TimeSpan endTime, TimeSpan timeOut)
         {
             TimeSpan Overtime = timeOut - endTime;
             return Overtime;

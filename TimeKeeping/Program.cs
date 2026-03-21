@@ -105,7 +105,7 @@ internal class Program
         TimeLogs newLog = new TimeLogs { EmployeeID = employeeID, ShiftName = shift.ShiftName ,Date = DateOnly.FromDateTime(timeInTime), TimeIn = timeInTime, LateHours = late };
 
         appService.AddTimeLog(newLog);
-        Console.WriteLine($"\nEmployee {employeeID}, is {shift.ShiftName}. Timed in at {timeInTime}. Late: {late:hh\\:mm\\:ss}\n");
+        Console.WriteLine($"\nEmployee {employeeID}, is {shift.ShiftName} shift. Timed in at {timeInTime}. Late: {late:hh\\:mm\\:ss}\n");
     }
     static void TimeOut(int employeeID, DateTime timeOutTime)
     {
@@ -121,14 +121,15 @@ internal class Program
         ShiftSchedule shift = appService.GetShiftSchedule(employee);
         log.TimeOut = timeOutTime;
         log.WorkingHours = appService.calcWorkingHours(log.TimeIn, timeOutTime);
+        TimeSpan constant = shift.ShiftEndTime - shift.ShiftStartTime;
 
-        if (timeOutTime > shift.ShiftEndTime)
+        if (log.WorkingHours > constant)
         {
-            log.OvertimeHours = appService.calcOvertime(shift.ShiftEndTime, timeOutTime);
+            log.OvertimeHours = appService.calcOvertime(constant, log.WorkingHours);
         }
-        else if (timeOutTime < shift.ShiftEndTime)
+        else if (log.WorkingHours < constant)
         {
-            log.UndertimeHours = appService.calcUndertime(shift.ShiftEndTime, timeOutTime);
+            log.UndertimeHours = appService.calcUndertime(constant, log.WorkingHours);
         }
         appService.UpdateLog(log);
         Console.WriteLine($"\nEmployee {employeeID} timed out at {timeOutTime}. Working Hours: {log.WorkingHours:hh\\:mm\\:ss}\n");
