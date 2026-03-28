@@ -1,0 +1,17 @@
+[
+  {
+    "EmployeeID": 0,
+    "ShiftID": 1,
+    "IsAdmin": true
+  },
+  {
+    "EmployeeID": 1,
+    "ShiftID": 2,
+    "IsAdmin": false
+  },
+  {
+    "EmployeeID": 2,
+    "ShiftID": 3,
+    "IsAdmin": false
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "ShiftID": 1,
+    "ShiftName": "Morning",
+    "ShiftStartTime": "2026-03-17T06:00:00",
+    "ShiftEndTime": "2026-03-17T14:00:00"
+  },
+  {
+    "ShiftID": 2,
+    "ShiftName": "Afternoon",
+    "ShiftStartTime": "2026-03-17T14:00:00",
+    "ShiftEndTime": "2026-03-17T22:00:00"
+  },
+  {
+    "ShiftID": 3,
+    "ShiftName": "Night",
+    "ShiftStartTime": "2026-03-17T06:00:00",
+    "ShiftEndTime": "2026-03-18T06:00:00"
+  }
+]
