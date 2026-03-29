@@ -54,6 +54,10 @@ namespace TimeKeepingAppService
         {
             return timeKeepingDataService.GetAllLogs();
         }
+        public List<TimeLogs> GetEmployeeLogs(int employee)
+        {
+            return timeKeepingDataService.GetEmployeeLogs(employee);
+        }
         public TimeSpan calcUndertime(TimeSpan endTime, TimeSpan timeOut)
         {
             TimeSpan Undertime = endTime - timeOut;

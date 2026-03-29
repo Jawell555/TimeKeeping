@@ -67,6 +67,11 @@ namespace TimeKeepingManagementDataService
                 SaveTimeLogsToJsonFile();
             }
         }
+        public List<TimeLogs> GetEmployeeLogs(int employeeID)
+        {
+            RetrieveTimeLogsFromJsonFile();
+            return TimeInOutLogs.FindAll(l => l.EmployeeID == employeeID);
+        }
         public List<TimeLogs> GetAllLogs()
         {
             RetrieveTimeLogsFromJsonFile();
@@ -150,5 +155,7 @@ namespace TimeKeepingManagementDataService
                 this.ShiftSchedules = JsonSerializer.Deserialize<List<ShiftSchedule>>(jsonFileReader.ReadToEnd(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).ToList();
             }
         }
+
+        
     }
 }

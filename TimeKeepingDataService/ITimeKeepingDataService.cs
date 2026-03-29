@@ -19,6 +19,7 @@ namespace TimeKeepingManagementDataService
         bool AlreadyTimedIn(int employeeID, DateTime timeInTime);
         bool EmployeeExists(int Employee);
         List<TimeLogs> GetAllLogs();
+        List<TimeLogs> GetEmployeeLogs(int employeeID);
 
     }
 }

@@ -71,6 +71,10 @@ namespace TimeKeepingManagementDataService
             return LoggedTimes.FirstOrDefault(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeOutTime) && l.TimeOut == DateTime.MinValue);
         
         }
+        public List<TimeLogs> GetEmployeeLogs (int employeeID)
+        {
+            return LoggedTimes.FindAll(l => l.EmployeeID == employeeID);
+        }
         public void UpdateTimeLog(TimeLogs log)
         {
             var existingLog = LoggedTimes.FirstOrDefault(l => l.EmployeeID == log.EmployeeID && l.Date == log.Date);

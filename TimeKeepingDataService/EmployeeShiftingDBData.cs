@@ -286,5 +286,33 @@ namespace TimeKeepingManagementDataService
             updateCommand.ExecuteNonQuery();
             _connection.Close();
         }
+
+        public List<TimeLogs> GetEmployeeLogs(int employeeID)
+        {
+            var selectStatement = "SELECT * FROM dbo.TimeLogs WHERE EmployeeID = @EmployeeID";
+            SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
+            _connection.Open();
+            selectCommand.Parameters.AddWithValue("@EmployeeID", employeeID);
+            SqlDataReader reader = selectCommand.ExecuteReader();
+            var logs = new List<TimeLogs>();
+            while (reader.Read())
+            {
+                TimeLogs log = new TimeLogs
+                {
+                    EmployeeID = reader.GetInt32(0),
+                    ShiftName = reader.GetString(1),
+                    Date = DateOnly.FromDateTime(reader.GetDateTime(2)),
+                    TimeIn = reader.GetDateTime(3),
+                    TimeOut = reader.GetDateTime(4),
+                    WorkingHours = reader.GetTimeSpan(5),
+                    LateHours = reader.GetTimeSpan(6),
+                    OvertimeHours = reader.GetTimeSpan(7),
+                    UndertimeHours = reader.GetTimeSpan(8)
+                };
+                logs.Add(log);
+            }
+            _connection.Close();
+            return logs;
+        }
     }
 }

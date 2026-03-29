@@ -54,6 +54,9 @@ namespace TimeKeepingManagementDataService
         {
             return _dataService.GetAllLogs();
         }
-
+       public  List<TimeLogs> GetEmployeeLogs(int employeeID)
+        {
+            return _dataService.GetEmployeeLogs(employeeID);
+        }
     }
 }

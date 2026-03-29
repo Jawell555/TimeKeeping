@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Data;
 using System.Numerics;
+using System.Xml.Serialization;
 using TimeKeepingAppService;
 using TimeKeepingModels;
 
@@ -20,34 +21,44 @@ internal class Program
     {
         bool isAdmin = appService.IsAdmin(currentEmployeeID);
         Console.WriteLine($"\nWelcome, Employee {currentEmployeeID}");
+        bool loop = true;
+        while (loop == true) { 
         Console.WriteLine("\nDo you want to:\n" +
             "1. Time In\n" +
-            "2. Time Out");
+            "2. Time Out" +
+            "\n3. View Logs");
 
         if (isAdmin)
         {
-            Console.WriteLine("3. View Logs");
+            Console.WriteLine("4. View All Logs");
         }
 
-        Console.WriteLine("4. Exit");
-        Console.Write("Select Option(1-4): ");
+        Console.WriteLine("5. Back");
+            Console.WriteLine("6. Exit");
+            Console.Write("Select Option(1-5): ");
 
         int choice = Convert.ToInt32(Console.ReadLine());
         switch (choice)
         {
-            case 4:
+            case 6:
                 Console.WriteLine("Exiting the program.");
                 Environment.Exit(0);
                 break;
-            case 3:
+            case 5:
+                    Console.WriteLine("Successfully retuned.\n");
+                    break;
+            case 4:
                 if (isAdmin)
                 {
-                    ViewLogs();
+                    ViewAllLogs();
                 }
                 else
                 {
                     Console.WriteLine("Invalid Selection. Try Again.");
                 }
+                break;
+            case 3:
+                ViewLogs();
                 break;
             case 1:
                 TimeIn(currentEmployeeID, DateTime.Now);
@@ -59,6 +70,23 @@ internal class Program
                 Console.WriteLine("Invalid Selection. Try Again");
                 break;
         }
+            loop = choiceValidation(choice, isAdmin);
+        }
+    }
+    static bool choiceValidation(int choice, bool isAdmin)
+    {
+        if ((choice == 1 || choice == 2 || choice == 3||choice==5) && (isAdmin == false))
+        {
+            return false;
+        }else if ((choice == 1 || choice == 2 || choice == 3 || choice == 4||choice==5) && (isAdmin == true))
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
     }
     static int employeeIdValidation()
     {
@@ -134,9 +162,25 @@ internal class Program
         appService.UpdateLog(log);
         Console.WriteLine($"\nEmployee {employeeID} timed out at {timeOutTime}. Working Hours: {log.WorkingHours:hh\\:mm\\:ss}\n");
     }
-    static void ViewLogs()
+    static void ViewAllLogs()
     {
         var timeLogs = appService.GetAllLogs();
+        Console.WriteLine("\n-----TIME LOGS-----");
+        if (!timeLogs.Any())
+        {
+            Console.WriteLine("No logs to display.\n");
+            return;
+        }
+
+        foreach (var l in timeLogs)
+        {
+            Console.WriteLine($"Employee ID: {l.EmployeeID}, Date: {l.Date}, Shift: {l.ShiftName}, Time In: {l.TimeIn:HH\\:mm}, Time Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, Working Hours: {l.WorkingHours:hh\\:mm\\:ss}, Late: {l.LateHours:hh\\:mm\\:ss}, OT: {l.OvertimeHours:hh\\:mm\\:ss}");
+        }
+        Console.WriteLine("---------------------\n");
+    }
+    static void ViewLogs()
+    {
+        var timeLogs = appService.GetEmployeeLogs(currentEmployeeID);
         Console.WriteLine("\n-----TIME LOGS-----");
         if (!timeLogs.Any())
         {
