@@ -11,7 +11,7 @@ internal class Program
     static EmployeeAppService appService = new EmployeeAppService();
     static DateOnly dateToday = DateOnly.FromDateTime(DateTime.Now);
     static int currentEmployeeID;
-    static DateOnly today = DateOnly.FromDateTime(DateTime.Now);
+    
 
     static void Main(string[] args)
     {
@@ -128,7 +128,8 @@ internal class Program
         }
         Employee employee = appService.GetEmployee(employeeID);
         ShiftSchedule shift = appService.GetShiftSchedule(employee);
-        DateTime start = today.ToDateTime(shift.ShiftStartTime);
+        dateToday = DateOnly.FromDateTime(DateTime.Now);
+        DateTime start = dateToday.ToDateTime(shift.ShiftStartTime);
         TimeSpan late = appService.calcLate(start, timeInTime);
 
         TimeLogs newLog = new TimeLogs { EmployeeID = employeeID, ShiftName = shift.ShiftName ,Date = DateOnly.FromDateTime(timeInTime), TimeIn = timeInTime, LateHours = late };
@@ -148,7 +149,8 @@ internal class Program
         
         Employee employee = appService.GetEmployee(employeeID);
         ShiftSchedule shift = appService.GetShiftSchedule(employee);
-        DateTime end = today.ToDateTime(shift.ShiftEndTime);
+        dateToday = DateOnly.FromDateTime(DateTime.Now);
+        DateTime end = dateToday.ToDateTime(shift.ShiftEndTime);
         log.TimeOut = timeOutTime;
         log.WorkingHours = appService.calcWorkingHours(log.TimeIn, timeOutTime);
         TimeSpan constant = shift.ShiftEndTime - shift.ShiftStartTime;
