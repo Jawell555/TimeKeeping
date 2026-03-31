@@ -11,6 +11,7 @@ internal class Program
     static EmployeeAppService appService = new EmployeeAppService();
     static DateOnly dateToday = DateOnly.FromDateTime(DateTime.Now);
     static int currentEmployeeID;
+    static DateOnly today = DateOnly.FromDateTime(DateTime.Now);
 
     static void Main(string[] args)
     {
@@ -127,8 +128,8 @@ internal class Program
         }
         Employee employee = appService.GetEmployee(employeeID);
         ShiftSchedule shift = appService.GetShiftSchedule(employee);
-
-        TimeSpan late = appService.calcLate(shift.ShiftStartTime, timeInTime);
+        DateTime start = today.ToDateTime(shift.ShiftStartTime);
+        TimeSpan late = appService.calcLate(start, timeInTime);
 
         TimeLogs newLog = new TimeLogs { EmployeeID = employeeID, ShiftName = shift.ShiftName ,Date = DateOnly.FromDateTime(timeInTime), TimeIn = timeInTime, LateHours = late };
 
@@ -144,9 +145,10 @@ internal class Program
             Console.WriteLine("\nYou must time in first.");
             return;
         }
-
+        
         Employee employee = appService.GetEmployee(employeeID);
         ShiftSchedule shift = appService.GetShiftSchedule(employee);
+        DateTime end = today.ToDateTime(shift.ShiftEndTime);
         log.TimeOut = timeOutTime;
         log.WorkingHours = appService.calcWorkingHours(log.TimeIn, timeOutTime);
         TimeSpan constant = shift.ShiftEndTime - shift.ShiftStartTime;
@@ -174,7 +176,7 @@ internal class Program
 
         foreach (var l in timeLogs)
         {
-            Console.WriteLine($"Employee ID: {l.EmployeeID}, Date: {l.Date}, Shift: {l.ShiftName}, Time In: {l.TimeIn:HH\\:mm}, Time Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, Working Hours: {l.WorkingHours:hh\\:mm\\:ss}, Late: {l.LateHours:hh\\:mm\\:ss}, OT: {l.OvertimeHours:hh\\:mm\\:ss}");
+            Console.WriteLine($"Employee ID: {l.EmployeeID}, \nDate: {l.Date}, \nShift: {l.ShiftName}, \nTime In: {l.TimeIn:HH\\:mm}, \nTime Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, \nWorking Hours: {l.WorkingHours:hh\\:mm\\:ss}, \nLate: {l.LateHours:hh\\:mm\\:ss}, \nOT: {l.OvertimeHours:hh\\:mm\\:ss}\n");
         }
         Console.WriteLine("---------------------\n");
     }
@@ -190,7 +192,7 @@ internal class Program
 
         foreach (var l in timeLogs)
         {
-            Console.WriteLine($"Employee ID: {l.EmployeeID}, Date: {l.Date}, Shift: {l.ShiftName}, Time In: {l.TimeIn:HH\\:mm}, Time Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, Working Hours: {l.WorkingHours:hh\\:mm\\:ss}, Late: {l.LateHours:hh\\:mm\\:ss}, OT: {l.OvertimeHours:hh\\:mm\\:ss}");
+            Console.WriteLine($"Employee ID: {l.EmployeeID}, \nDate: {l.Date}, \nShift: {l.ShiftName}, \nTime In: {l.TimeIn:HH\\:mm}, \nTime Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, \nWorking Hours: {l.WorkingHours:hh\\:mm\\:ss}, \nLate: {l.LateHours:hh\\:mm\\:ss}, \nOT: {l.OvertimeHours:hh\\:mm\\:ss}\n");
         }
         Console.WriteLine("---------------------\n");
     }

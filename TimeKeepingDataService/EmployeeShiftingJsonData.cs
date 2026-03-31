@@ -15,12 +15,13 @@ namespace TimeKeepingManagementDataService
         private List<TimeLogs> TimeInOutLogs = new List<TimeLogs>();
 
         private string _employeeJsonFilePath, _shiftingJsonFilePath, _logsJsonFilePath;
-        public EmployeeShiftingJsonData() {
+        public EmployeeShiftingJsonData()
+        {
             _employeeJsonFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}Employee.json";
             _shiftingJsonFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}ShiftSchedule.json";
             _logsJsonFilePath = $"{AppDomain.CurrentDomain.BaseDirectory}TimeLogs.json";
 
-               PopulateJsonFiles();
+            PopulateJsonFiles();
         }
         public void Add(Employee employee)
         {
@@ -99,17 +100,16 @@ namespace TimeKeepingManagementDataService
                 SaveEmployeeDataToJsonFiles();
             }
             RetrieveShiftingDataFromJsonFile();
-            if(ShiftSchedules.Count <= 0)
+            if (ShiftSchedules.Count <= 0)
             {
-                DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-                DateTime shiftStart1 = today.ToDateTime(new TimeOnly(6, 0));
-                DateTime shiftStart2 = shiftStart1.AddHours(8);
-                DateTime shiftStart3 = shiftStart2.AddHours(8);
+                TimeOnly shiftStart1 = new TimeOnly(6, 0);
+                TimeOnly shiftStart2 = shiftStart1.AddHours(8);
+                TimeOnly shiftStart3 = shiftStart2.AddHours(8);
 
-                ShiftSchedules.Add(new ShiftSchedule { ShiftID = 1, ShiftName = "Morning", ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart1.AddHours(8)});
+                ShiftSchedules.Add(new ShiftSchedule { ShiftID = 1, ShiftName = "Morning", ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart1.AddHours(8) });
                 ShiftSchedules.Add(new ShiftSchedule { ShiftID = 2, ShiftName = "Afternoon", ShiftStartTime = shiftStart2, ShiftEndTime = shiftStart2.AddHours(8) });
                 ShiftSchedules.Add(new ShiftSchedule { ShiftID = 3, ShiftName = "Night", ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart3.AddHours(8) });
-                
+
                 SaveShiftDataToJsonFiles();
             }
         }
@@ -131,7 +131,7 @@ namespace TimeKeepingManagementDataService
         {
             using (var jsonFileReader = File.OpenText(this._employeeJsonFilePath))
             {
-                this.Employees =JsonSerializer.Deserialize<List<Employee>>(jsonFileReader.ReadToEnd(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).ToList();
+                this.Employees = JsonSerializer.Deserialize<List<Employee>>(jsonFileReader.ReadToEnd(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true }).ToList();
             }
         }
         private void SaveShiftDataToJsonFiles()
@@ -145,7 +145,7 @@ namespace TimeKeepingManagementDataService
         {
             using (var outputStream = File.OpenWrite(this._employeeJsonFilePath))
             {
-                JsonSerializer.Serialize<List<Employee>>(new Utf8JsonWriter(outputStream, new JsonWriterOptions { SkipValidation = true, Indented = true}),Employees);
+                JsonSerializer.Serialize<List<Employee>>(new Utf8JsonWriter(outputStream, new JsonWriterOptions { SkipValidation = true, Indented = true }), Employees);
             }
         }
         private void RetrieveShiftingDataFromJsonFile()
@@ -156,6 +156,6 @@ namespace TimeKeepingManagementDataService
             }
         }
 
-        
+
     }
 }

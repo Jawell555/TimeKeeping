@@ -53,5 +53,49 @@
     "LateHours": "1.10:59:00.2993868",
     "OvertimeHours": "00:00:00",
     "UndertimeHours": "00:00:00"
+  },
+  {
+    "EmployeeID": 0,
+    "ShiftName": "Morning",
+    "Date": "2026-03-29",
+    "TimeIn": "2026-03-29T12:02:59.2977073+08:00",
+    "TimeOut": "0001-01-01T00:00:00",
+    "WorkingHours": "00:00:00",
+    "LateHours": "12.06:02:59.2977073",
+    "OvertimeHours": "00:00:00",
+    "UndertimeHours": "00:00:00"
+  },
+  {
+    "EmployeeID": 0,
+    "ShiftName": "Morning",
+    "Date": "2026-03-31",
+    "TimeIn": "2026-03-31T16:00:56.421067+08:00",
+    "TimeOut": "2026-03-31T16:01:00.9525665+08:00",
+    "WorkingHours": "00:00:04.5314995",
+    "LateHours": "10:00:56.4210670",
+    "OvertimeHours": "00:00:00",
+    "UndertimeHours": "07:59:55.4685005"
+  },
+  {
+    "EmployeeID": 1,
+    "ShiftName": "Afternoon",
+    "Date": "2026-03-31",
+    "TimeIn": "2026-03-31T16:01:22.936887+08:00",
+    "TimeOut": "2026-03-31T16:01:36.8423158+08:00",
+    "WorkingHours": "00:00:13.9054288",
+    "LateHours": "02:01:22.9368870",
+    "OvertimeHours": "00:00:00",
+    "UndertimeHours": "07:59:46.0945712"
+  },
+  {
+    "EmployeeID": 2,
+    "ShiftName": "Night",
+    "Date": "2026-03-31",
+    "TimeIn": "2026-03-31T16:01:35.6880925+08:00",
+    "TimeOut": "2026-03-31T16:01:43.6465063+08:00",
+    "WorkingHours": "00:00:07.9584138",
+    "LateHours": "10:01:35.6880925",
+    "OvertimeHours": "00:00:07.9584138",
+    "UndertimeHours": "00:00:00"
   }
 ]

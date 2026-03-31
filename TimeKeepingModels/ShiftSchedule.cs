@@ -10,8 +10,8 @@ namespace TimeKeepingModels
     {
         public int ShiftID { get; set; }
         public string ShiftName { get; set; }
-        public DateTime ShiftStartTime { get; set; }
-        public DateTime ShiftEndTime { get; set; }
+        public TimeOnly ShiftStartTime { get; set; }
+        public TimeOnly ShiftEndTime { get; set; }
         
     }
 }

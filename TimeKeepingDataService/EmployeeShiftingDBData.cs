@@ -18,7 +18,7 @@ namespace TimeKeepingManagementDataService
         public EmployeeShiftingDBData()
         {
             _connection = new SqlConnection(_connectionString);
-            
+
             AddSeeds();
         }
 
@@ -27,10 +27,9 @@ namespace TimeKeepingManagementDataService
             var existingShifts = RetrieveShifts();
             if (existingShifts.Count == 0)
             {
-                DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-                DateTime shiftStart1 = today.ToDateTime(new TimeOnly(6, 0));
-                DateTime shiftStart2 = shiftStart1.AddHours(8);
-                DateTime shiftStart3 = shiftStart2.AddHours(8);
+                TimeOnly shiftStart1 = new TimeOnly(6, 0);
+                TimeOnly shiftStart2 = shiftStart1.AddHours(8);
+                TimeOnly shiftStart3 = shiftStart2.AddHours(8);
 
                 ShiftSchedule morningShift = new ShiftSchedule { ShiftID = 1, ShiftName = "Morning", ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart1.AddHours(8) };
                 ShiftSchedule afternoonShift = new ShiftSchedule { ShiftID = 2, ShiftName = "Afternoon", ShiftStartTime = shiftStart2, ShiftEndTime = shiftStart2.AddHours(8) };
@@ -50,28 +49,28 @@ namespace TimeKeepingManagementDataService
                 Add(employee1);
                 Add(employee2);
             }
-            
+
         }
         private List<ShiftSchedule> RetrieveShifts()
+        {
+            var selectStatement = "SELECT * FROM dbo.ShiftSchedules";
+            SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
+            _connection.Open();
+            SqlDataReader reader = selectCommand.ExecuteReader();
+            var shifts = new List<ShiftSchedule>();
+            while (reader.Read())
             {
-                var selectStatement = "SELECT * FROM dbo.ShiftSchedules";
-                SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
-                _connection.Open();
-                SqlDataReader reader = selectCommand.ExecuteReader();
-                var shifts = new List<ShiftSchedule>();
-                while (reader.Read())
+                ShiftSchedule shift = new ShiftSchedule
                 {
-                    ShiftSchedule shift = new ShiftSchedule
-                    {
-                        ShiftID = reader.GetInt32(0),
-                        ShiftName = reader.GetString(1),
-                        ShiftStartTime = reader.GetDateTime(2),
-                        ShiftEndTime = reader.GetDateTime(3)
-                    };
-                    shifts.Add(shift);
-                }
-                _connection.Close();
-                return shifts;
+                    ShiftID = reader.GetInt32(0),
+                    ShiftName = reader.GetString(1),
+                    ShiftStartTime = TimeOnly.FromTimeSpan(reader.GetTimeSpan(2)),
+                    ShiftEndTime = TimeOnly.FromTimeSpan(reader.GetTimeSpan(3))
+                };
+                shifts.Add(shift);
+            }
+            _connection.Close();
+            return shifts;
         }
 
         private List<Employee> RetrieveEmployees()
@@ -98,7 +97,7 @@ namespace TimeKeepingManagementDataService
         public void Add(Employee employee)
         {
             var insertStatement = "INSERT INTO dbo.Employees (EmployeeID, ShiftID, IsAdmin) VALUES (@EmployeeID, @ShiftID, @IsAdmin)";
-            
+
             SqlCommand insertCommand = new SqlCommand(insertStatement, _connection);
 
             insertCommand.Parameters.AddWithValue("@EmployeeID", employee.EmployeeID);
@@ -208,7 +207,7 @@ namespace TimeKeepingManagementDataService
             selectCommand.Parameters.AddWithValue("@EmployeeID", employeeID);
             _connection.Open();
             SqlDataReader reader = selectCommand.ExecuteReader();
-            
+
             var employee = new Employee();
             while (reader.Read())
             {
@@ -232,8 +231,8 @@ namespace TimeKeepingManagementDataService
             {
                 shift.ShiftID = reader.GetInt32(0);
                 shift.ShiftName = reader.GetString(1);
-                shift.ShiftStartTime = reader.GetDateTime(2);
-                shift.ShiftEndTime = reader.GetDateTime(3);
+                shift.ShiftStartTime = TimeOnly.FromTimeSpan(reader.GetTimeSpan(2));
+                shift.ShiftEndTime = TimeOnly.FromTimeSpan(reader.GetTimeSpan(3));
             }
             _connection.Close();
             return shift;
@@ -254,17 +253,17 @@ namespace TimeKeepingManagementDataService
                 _connection.Close();
                 return null;
             }
-                
-             log.EmployeeID = reader.GetInt32(0);
-             log.ShiftName = reader.GetString(1);
-             log.Date = DateOnly.FromDateTime(reader.GetDateTime(2));
-             log.TimeIn = reader.GetDateTime(3);
-             log.TimeOut = reader.IsDBNull(4)? default: reader.GetDateTime(4);
-             log.WorkingHours = reader.GetTimeSpan(5);
-             log.LateHours = reader.GetTimeSpan(6);
-             log.OvertimeHours = reader.GetTimeSpan(7);
-             log.UndertimeHours = reader.GetTimeSpan(8);
-          
+
+            log.EmployeeID = reader.GetInt32(0);
+            log.ShiftName = reader.GetString(1);
+            log.Date = DateOnly.FromDateTime(reader.GetDateTime(2));
+            log.TimeIn = reader.GetDateTime(3);
+            log.TimeOut = reader.IsDBNull(4) ? default : reader.GetDateTime(4);
+            log.WorkingHours = reader.GetTimeSpan(5);
+            log.LateHours = reader.GetTimeSpan(6);
+            log.OvertimeHours = reader.GetTimeSpan(7);
+            log.UndertimeHours = reader.GetTimeSpan(8);
+
 
             _connection.Close();
             return log;

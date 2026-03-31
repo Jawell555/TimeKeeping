@@ -16,10 +16,9 @@ namespace TimeKeepingManagementDataService
 
         public EmployeeShiftingInMemory()
         {
-            DateOnly today = DateOnly.FromDateTime(DateTime.Now);
-            DateTime shiftStart1 = today.ToDateTime(new TimeOnly(6, 0));
-            DateTime shiftStart2 = shiftStart1.AddHours(8);
-            DateTime shiftStart3 = shiftStart2.AddHours(8);
+            TimeOnly shiftStart1 = new TimeOnly(6, 0);
+            TimeOnly shiftStart2 = shiftStart1.AddHours(8);
+            TimeOnly shiftStart3 = shiftStart2.AddHours(8);
 
             ShiftSchedule morningShift = new ShiftSchedule { ShiftID = 1, ShiftName = "Morning",ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart1.AddHours(8) };
             ShiftSchedule afternoonShift = new ShiftSchedule { ShiftID = 2, ShiftName = "Afternoon", ShiftStartTime = shiftStart2, ShiftEndTime = shiftStart2.AddHours(8) };
