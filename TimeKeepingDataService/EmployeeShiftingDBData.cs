@@ -188,7 +188,7 @@ namespace TimeKeepingManagementDataService
                     ShiftName = reader.GetString(1),
                     Date = DateOnly.FromDateTime(reader.GetDateTime(2)),
                     TimeIn = reader.GetDateTime(3),
-                    TimeOut = reader.GetDateTime(4),
+                    TimeOut = reader.IsDBNull(4) ? (DateTime?) null : reader.GetDateTime(4),
                     WorkingHours = reader.GetTimeSpan(5),
                     LateHours = reader.GetTimeSpan(6),
                     OvertimeHours = reader.GetTimeSpan(7),
@@ -258,7 +258,7 @@ namespace TimeKeepingManagementDataService
             log.ShiftName = reader.GetString(1);
             log.Date = DateOnly.FromDateTime(reader.GetDateTime(2));
             log.TimeIn = reader.GetDateTime(3);
-            log.TimeOut = reader.IsDBNull(4) ? default : reader.GetDateTime(4);
+            log.TimeOut = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4);
             log.WorkingHours = reader.GetTimeSpan(5);
             log.LateHours = reader.GetTimeSpan(6);
             log.OvertimeHours = reader.GetTimeSpan(7);
@@ -302,7 +302,7 @@ namespace TimeKeepingManagementDataService
                     ShiftName = reader.GetString(1),
                     Date = DateOnly.FromDateTime(reader.GetDateTime(2)),
                     TimeIn = reader.GetDateTime(3),
-                    TimeOut = reader.GetDateTime(4),
+                    TimeOut = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
                     WorkingHours = reader.GetTimeSpan(5),
                     LateHours = reader.GetTimeSpan(6),
                     OvertimeHours = reader.GetTimeSpan(7),

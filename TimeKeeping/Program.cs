@@ -178,7 +178,7 @@ internal class Program
 
         foreach (var l in timeLogs)
         {
-            Console.WriteLine($"Employee ID: {l.EmployeeID}, \nDate: {l.Date}, \nShift: {l.ShiftName}, \nTime In: {l.TimeIn:HH\\:mm}, \nTime Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, \nWorking Hours: {l.WorkingHours:hh\\:mm\\:ss}, \nLate: {l.LateHours:hh\\:mm\\:ss}, \nOT: {l.OvertimeHours:hh\\:mm\\:ss}\n");
+            Console.WriteLine($"Employee ID: {l.EmployeeID}, \nDate: {l.Date}, \nShift: {l.ShiftName}, \nTime In: {l.TimeIn:HH\\:mm}, \nTime Out: {(l.TimeOut != (DateTime?)null ? (l.TimeOut) : "Ongoing")}, \nWorking Hours: {l.WorkingHours:hh\\:mm\\:ss}, \nLate: {l.LateHours:hh\\:mm\\:ss}, \nOT: {l.OvertimeHours:hh\\:mm\\:ss}\n");
         }
         Console.WriteLine("---------------------\n");
     }
@@ -194,7 +194,7 @@ internal class Program
 
         foreach (var l in timeLogs)
         {
-            Console.WriteLine($"Employee ID: {l.EmployeeID}, \nDate: {l.Date}, \nShift: {l.ShiftName}, \nTime In: {l.TimeIn:HH\\:mm}, \nTime Out: {(l.TimeOut != DateTime.MinValue ? (l.TimeOut) : "Ongoing")}, \nWorking Hours: {l.WorkingHours:hh\\:mm\\:ss}, \nLate: {l.LateHours:hh\\:mm\\:ss}, \nOT: {l.OvertimeHours:hh\\:mm\\:ss}\n");
+            Console.WriteLine($"Employee ID: {l.EmployeeID}, \nDate: {l.Date}, \nShift: {l.ShiftName}, \nTime In: {l.TimeIn:HH\\:mm}, \nTime Out: {(l.TimeOut != (DateTime?)null ? (l.TimeOut) : "Ongoing")}, \nWorking Hours: {l.WorkingHours:hh\\:mm\\:ss}, \nLate: {l.LateHours:hh\\:mm\\:ss}, \nOT: {l.OvertimeHours:hh\\:mm\\:ss}\n");
         }
         Console.WriteLine("---------------------\n");
     }
