@@ -34,17 +34,17 @@ namespace TimeKeepingManagementDataService
         {
             return _dataService.GetEmployeeShift(employee);
         }
-        public TimeLogs? GetLogByDate(int employeeID, DateTime timeOutTime)
+        public TimeLogs? GetLastLog(int employeeID)
         {
-            return _dataService.GetLogByDate(employeeID, timeOutTime);
+            return _dataService.GetLastLog(employeeID);
         }
         public void UpdateTimeLog(TimeLogs log)
         {
             _dataService.UpdateTimeLog(log);
         }
-        public bool AlreadyTimedIn(int employeeID, DateTime timeInTime)
+        public bool AlreadyTimedIn(int employeeID)
         {
-            return _dataService.AlreadyTimedIn(employeeID, timeInTime);
+            return _dataService.AlreadyTimedIn(employeeID);
         }
         public bool EmployeeExists(int employeeID)
         {

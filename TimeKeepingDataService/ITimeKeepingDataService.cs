@@ -14,9 +14,9 @@ namespace TimeKeepingManagementDataService
         void Add(TimeLogs timeLog);
         Employee? GetEmployeeByID(int employeeID);
         ShiftSchedule? GetEmployeeShift(Employee employee);
-        TimeLogs? GetLogByDate(int employeeID, DateTime timeOutTime);
+        TimeLogs? GetLastLog(int employeeID);
         void UpdateTimeLog(TimeLogs log);
-        bool AlreadyTimedIn(int employeeID, DateTime timeInTime);
+        bool AlreadyTimedIn(int employeeID);
         bool EmployeeExists(int Employee);
         List<TimeLogs> GetAllLogs();
         List<TimeLogs> GetEmployeeLogs(int employeeID);

@@ -36,9 +36,9 @@ namespace TimeKeepingManagementDataService
             dummyEmployee.Add(employee1);
             dummyEmployee.Add(employee2);
         }
-        public bool AlreadyTimedIn(int employeeID, DateTime timeInTime)
+        public bool AlreadyTimedIn(int employeeID)
         {
-            return LoggedTimes.Any(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeInTime) && l.TimeOut == DateTime.MinValue);
+            return LoggedTimes.Any(l => l.EmployeeID == employeeID && l.TimeOut == null);
         }
         public bool EmployeeExists(int Employee)
         {
@@ -65,9 +65,9 @@ namespace TimeKeepingManagementDataService
         {
             return FixedSchedule.FirstOrDefault(s => s.ShiftID == employee.ShiftID);
         }
-        public TimeLogs? GetLogByDate(int employeeID, DateTime timeOutTime)
+        public TimeLogs? GetLastLog(int employeeID)
         {
-            return LoggedTimes.FirstOrDefault(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeOutTime) && l.TimeOut == DateTime.MinValue);
+            return LoggedTimes.FirstOrDefault(l => l.EmployeeID == employeeID && l.TimeOut == null);
         
         }
         public List<TimeLogs> GetEmployeeLogs (int employeeID)
@@ -76,7 +76,7 @@ namespace TimeKeepingManagementDataService
         }
         public void UpdateTimeLog(TimeLogs log)
         {
-            var existingLog = LoggedTimes.FirstOrDefault(l => l.EmployeeID == log.EmployeeID && l.Date == log.Date);
+            var existingLog = LoggedTimes.FirstOrDefault(l => l.EmployeeID == log.EmployeeID && l.TimeOut == null);
             if (existingLog != null)
             {
                 existingLog.TimeIn = log.TimeIn;

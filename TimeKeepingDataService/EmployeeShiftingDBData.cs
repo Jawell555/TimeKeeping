@@ -144,13 +144,12 @@ namespace TimeKeepingManagementDataService
 
         }
 
-        public bool AlreadyTimedIn(int employeeID, DateTime timeInTime)
+        public bool AlreadyTimedIn(int employeeID)
         {
-            var selectStatement = "SELECT COUNT(*) FROM dbo.TimeLogs WHERE EmployeeID = @EmployeeID AND [Date] = @Date AND TimeOut IS NULL";
+            var selectStatement = "SELECT COUNT(*) FROM dbo.TimeLogs WHERE EmployeeID = @EmployeeID AND TimeIn IS NOT NULL AND TimeOut IS NULL";
             SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
             _connection.Open();
             selectCommand.Parameters.AddWithValue("@EmployeeID", employeeID);
-            selectCommand.Parameters.AddWithValue("@Date", DateOnly.FromDateTime(timeInTime));
 
             var rows = Convert.ToInt32(selectCommand.ExecuteScalar());
 
@@ -239,12 +238,11 @@ namespace TimeKeepingManagementDataService
 
         }
 
-        public TimeLogs? GetLogByDate(int employeeID, DateTime timeOutTime)
+        public TimeLogs? GetLastLog(int employeeID)
         {
-            var selectStatement = "SELECT * FROM TimeLogs WHERE EmployeeID = @EmployeeID AND [Date] = @Date AND TimeOut IS NULL";
+            var selectStatement = "SELECT * FROM TimeLogs WHERE EmployeeID = @EmployeeID  AND TimeOut IS NULL";
             SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
             selectCommand.Parameters.AddWithValue("@EmployeeID", employeeID);
-            selectCommand.Parameters.AddWithValue("@Date", DateOnly.FromDateTime(timeOutTime));
             _connection.Open();
             SqlDataReader reader = selectCommand.ExecuteReader();
             var log = new TimeLogs();
@@ -272,7 +270,7 @@ namespace TimeKeepingManagementDataService
 
         public void UpdateTimeLog(TimeLogs log)
         {
-            var updateStatement = "UPDATE dbo.TimeLogs SET TimeOut = @TimeOut, WorkingHours = @WorkingHours, LateHours = @LateHours, OvertimeHours = @OvertimeHours, UndertimeHours = @UndertimeHours WHERE EmployeeID = @EmployeeID AND [Date] = @Date AND TimeOut IS NULL";
+            var updateStatement = "UPDATE dbo.TimeLogs SET TimeOut = @TimeOut, WorkingHours = @WorkingHours, LateHours = @LateHours, OvertimeHours = @OvertimeHours, UndertimeHours = @UndertimeHours WHERE EmployeeID = @EmployeeID  AND TimeOut IS NULL";
             SqlCommand updateCommand = new SqlCommand(updateStatement, _connection);
             updateCommand.Parameters.AddWithValue("@TimeOut", log.TimeOut);
             updateCommand.Parameters.AddWithValue("@WorkingHours", log.WorkingHours);
@@ -280,7 +278,6 @@ namespace TimeKeepingManagementDataService
             updateCommand.Parameters.AddWithValue("@OvertimeHours", log.OvertimeHours);
             updateCommand.Parameters.AddWithValue("@UndertimeHours", log.UndertimeHours);
             updateCommand.Parameters.AddWithValue("@EmployeeID", log.EmployeeID);
-            updateCommand.Parameters.AddWithValue("@Date", log.Date);
             _connection.Open();
             updateCommand.ExecuteNonQuery();
             _connection.Close();

@@ -48,15 +48,15 @@ namespace TimeKeepingManagementDataService
             RetrieveShiftingDataFromJsonFile();
             return ShiftSchedules.FirstOrDefault(s => s.ShiftID == employee.ShiftID);
         }
-        public TimeLogs? GetLogByDate(int employeeID, DateTime timeOutTime)
+        public TimeLogs? GetLastLog(int employeeID)
         {
             RetrieveTimeLogsFromJsonFile();
-            return TimeInOutLogs.FirstOrDefault(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeOutTime) && l.TimeOut == DateTime.MinValue);
+            return TimeInOutLogs.FirstOrDefault(l => l.EmployeeID == employeeID && l.TimeOut == null);
         }
         public void UpdateTimeLog(TimeLogs log)
         {
             RetrieveTimeLogsFromJsonFile();
-            var existingLog = TimeInOutLogs.FirstOrDefault(l => l.EmployeeID == log.EmployeeID && l.Date == log.Date);
+            var existingLog = TimeInOutLogs.LastOrDefault(l => l.EmployeeID == log.EmployeeID && l.TimeOut == null);
             if (existingLog != null)
             {
                 existingLog.TimeIn = log.TimeIn;
@@ -78,10 +78,10 @@ namespace TimeKeepingManagementDataService
             RetrieveTimeLogsFromJsonFile();
             return TimeInOutLogs;
         }
-        public bool AlreadyTimedIn(int employeeID, DateTime timeInTime)
+        public bool AlreadyTimedIn(int employeeID)
         {
             RetrieveTimeLogsFromJsonFile();
-            return TimeInOutLogs.Any(l => l.EmployeeID == employeeID && l.Date == DateOnly.FromDateTime(timeInTime) && l.TimeOut == DateTime.MinValue);
+            return TimeInOutLogs.Any(l => l.EmployeeID == employeeID  && l.TimeOut == null);
         }
         public bool EmployeeExists(int Employee)
         {

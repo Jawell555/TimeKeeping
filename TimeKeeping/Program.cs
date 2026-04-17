@@ -120,7 +120,7 @@ internal class Program
     }
     static void TimeIn(int employeeID, DateTime timeInTime)
     {
-        if (appService.AlreadyTimedIn(employeeID, timeInTime))
+        if (appService.AlreadyTimedIn(employeeID))
         {
             Console.WriteLine("\nYou already timed in.");
             return;
@@ -140,7 +140,7 @@ internal class Program
     static void TimeOut(int employeeID, DateTime timeOutTime)
     {
 
-        TimeLogs log = appService.GetTimeLogs(employeeID, timeOutTime);
+        TimeLogs log = appService.GetLastLog(employeeID);
         if (log == null)
         {
             Console.WriteLine("\nYou must time in first.");

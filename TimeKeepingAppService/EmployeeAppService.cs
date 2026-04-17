@@ -29,18 +29,18 @@ namespace TimeKeepingAppService
         {
             return timeKeepingDataService.EmployeeExists(employeeID);
         }
-        public bool AlreadyTimedIn(int employeeID, DateTime timeInTime)
+        public bool AlreadyTimedIn(int employeeID)
         {
-            return timeKeepingDataService.AlreadyTimedIn(employeeID, timeInTime);
+            return timeKeepingDataService.AlreadyTimedIn(employeeID);
         }
         public bool IsAdmin(int employeeID)
         {
             Employee employee= GetEmployee(employeeID);
             return employee != null && employee.IsAdmin;
         }
-        public TimeLogs? GetTimeLogs(int employeeID, DateTime date)
+        public TimeLogs? GetLastLog(int employeeID)
         {
-            return timeKeepingDataService.GetLogByDate(employeeID, date);
+            return timeKeepingDataService.GetLastLog(employeeID);
         }
         public void UpdateLog(TimeLogs log)
         {
