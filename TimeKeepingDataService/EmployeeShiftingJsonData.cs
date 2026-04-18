@@ -108,7 +108,7 @@ namespace TimeKeepingManagementDataService
 
                 ShiftSchedules.Add(new ShiftSchedule { ShiftID = 1, ShiftName = "Morning", ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart1.AddHours(8) });
                 ShiftSchedules.Add(new ShiftSchedule { ShiftID = 2, ShiftName = "Afternoon", ShiftStartTime = shiftStart2, ShiftEndTime = shiftStart2.AddHours(8) });
-                ShiftSchedules.Add(new ShiftSchedule { ShiftID = 3, ShiftName = "Night", ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart3.AddHours(8) });
+                ShiftSchedules.Add(new ShiftSchedule { ShiftID = 3, ShiftName = "Night", ShiftStartTime = shiftStart3, ShiftEndTime = shiftStart3.AddHours(8) });
 
                 SaveShiftDataToJsonFiles();
             }

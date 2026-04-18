@@ -14,7 +14,7 @@
   {
     "ShiftID": 3,
     "ShiftName": "Night",
-    "ShiftStartTime": "06:00:00",
+    "ShiftStartTime": "22:00:00",
     "ShiftEndTime": "06:00:00"
   }
 ]

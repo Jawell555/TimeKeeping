@@ -146,7 +146,7 @@ namespace TimeKeepingManagementDataService
 
         public bool AlreadyTimedIn(int employeeID)
         {
-            var selectStatement = "SELECT COUNT(*) FROM dbo.TimeLogs WHERE EmployeeID = @EmployeeID AND TimeIn IS NOT NULL AND TimeOut IS NULL";
+            var selectStatement = "SELECT COUNT(*) FROM dbo.TimeLogs WHERE EmployeeID = @EmployeeID AND TimeOut IS NULL";
             SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
             _connection.Open();
             selectCommand.Parameters.AddWithValue("@EmployeeID", employeeID);

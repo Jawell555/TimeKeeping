@@ -36,7 +36,7 @@ internal class Program
 
         Console.WriteLine("5. Back");
             Console.WriteLine("6. Exit");
-            Console.Write("Select Option(1-5): ");
+            Console.Write("Select Option(1-6): ");
 
         int choice = Convert.ToInt32(Console.ReadLine());
         switch (choice)
