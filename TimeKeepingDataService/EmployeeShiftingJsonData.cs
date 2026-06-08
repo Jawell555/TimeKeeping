@@ -43,12 +43,12 @@ namespace TimeKeepingManagementDataService
             RetrieveEmployeeDataFromJsonFile();
             return Employees.FirstOrDefault(e => e.EmployeeID == employeeID);
         }
-        public ShiftSchedule? GetEmployeeShift(Employee employee)
+        public ShiftSchedule? GetEmployeeShift(int shiftID)
         {
             RetrieveShiftingDataFromJsonFile();
-            return ShiftSchedules.FirstOrDefault(s => s.ShiftID == employee.ShiftID);
+            return ShiftSchedules.FirstOrDefault(s => s.ShiftID == shiftID);
         }
-        public TimeLogs? GetLastLog(int employeeID)
+        public TimeLogs? GetLastTimeIn(int employeeID)
         {
             RetrieveTimeLogsFromJsonFile();
             return TimeInOutLogs.FirstOrDefault(l => l.EmployeeID == employeeID && l.TimeOut == null);
@@ -81,7 +81,7 @@ namespace TimeKeepingManagementDataService
         public bool AlreadyTimedIn(int employeeID)
         {
             RetrieveTimeLogsFromJsonFile();
-            return TimeInOutLogs.Any(l => l.EmployeeID == employeeID  && l.TimeOut == null);
+            return TimeInOutLogs.Any(l => l.EmployeeID == employeeID && l.TimeOut == null);
         }
         public bool EmployeeExists(int Employee)
         {
@@ -156,6 +156,72 @@ namespace TimeKeepingManagementDataService
             }
         }
 
+        public List<Employee> GetEmployees()
+        {
+            RetrieveEmployeeDataFromJsonFile();
+            return Employees;
+        }
 
+        public List<ShiftSchedule> GetShifts()
+        {
+            RetrieveShiftingDataFromJsonFile();
+            return ShiftSchedules;
+        }
+
+        public List<TimeLogs> GetLatestEmployeeLogs()
+        {
+            RetrieveTimeLogsFromJsonFile();
+
+            return TimeInOutLogs
+                .GroupBy(l => l.EmployeeID)
+                .Select(g => g.OrderByDescending(l => l.Date)
+                               .ThenByDescending(l => l.TimeIn)
+                               .FirstOrDefault())
+                .Where(l => l != null)
+                .ToList();
+        }
+
+        public TimeLogs? GetLatestEmployeeLogByID(int employeeID)
+        {
+            RetrieveTimeLogsFromJsonFile();
+            return TimeInOutLogs
+                .Where(l => l.EmployeeID == employeeID)
+                .OrderByDescending(l => l.Date)
+                .ThenByDescending(l => l.TimeIn)
+                .FirstOrDefault();
+        }
+        public void AddShiftSchedule(ShiftSchedule shift)
+        {
+            ShiftSchedules.Add(shift);
+            SaveShiftDataToJsonFiles();
+        }
+        public int GenerateShiftID()
+        {
+            int newShiftID = ShiftSchedules.Count > 0 ? ShiftSchedules.Max(s => s.ShiftID) + 1 : 1;
+            return newShiftID;
+        }
+        public void UpdateShiftSchedule(ShiftSchedule shift)
+        {
+            RetrieveShiftingDataFromJsonFile();
+            var existingShift = ShiftSchedules.FirstOrDefault(s => s.ShiftID == shift.ShiftID);
+            if (existingShift != null)
+            {
+                existingShift.ShiftName = shift.ShiftName;
+                existingShift.ShiftStartTime = shift.ShiftStartTime;
+                existingShift.ShiftEndTime = shift.ShiftEndTime;
+                SaveShiftDataToJsonFiles();
+            }
+
+        }
+        public void DeleteShiftSchedule(int shiftID)
+        {
+            RetrieveShiftingDataFromJsonFile();
+            var shiftToDelete = ShiftSchedules.FirstOrDefault(s => s.ShiftID == shiftID);
+            if (shiftToDelete != null)
+            {
+                ShiftSchedules.Remove(shiftToDelete);
+                SaveShiftDataToJsonFiles();
+            }
+        }
     }
 }

@@ -127,7 +127,7 @@ internal class Program
 
         }
         Employee employee = appService.GetEmployee(employeeID);
-        ShiftSchedule shift = appService.GetShiftSchedule(employee);
+        ShiftSchedule shift = appService.GetShiftSchedule(employee.ShiftID);
         dateToday = DateOnly.FromDateTime(DateTime.Now);
         DateTime start = dateToday.ToDateTime(shift.ShiftStartTime);
         TimeSpan late = appService.calcLate(start, timeInTime);
@@ -140,7 +140,7 @@ internal class Program
     static void TimeOut(int employeeID, DateTime timeOutTime)
     {
 
-        TimeLogs log = appService.GetLastLog(employeeID);
+        TimeLogs log = appService.GetLastTimeIn(employeeID);
         if (log == null)
         {
             Console.WriteLine("\nYou must time in first.");
@@ -148,7 +148,7 @@ internal class Program
         }
         
         Employee employee = appService.GetEmployee(employeeID);
-        ShiftSchedule shift = appService.GetShiftSchedule(employee);
+        ShiftSchedule shift = appService.GetShiftSchedule(employee.ShiftID);
         dateToday = DateOnly.FromDateTime(DateTime.Now);
         DateTime end = dateToday.ToDateTime(shift.ShiftEndTime);
         log.TimeOut = timeOutTime;

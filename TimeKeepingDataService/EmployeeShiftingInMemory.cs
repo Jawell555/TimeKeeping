@@ -20,7 +20,7 @@ namespace TimeKeepingManagementDataService
             TimeOnly shiftStart2 = shiftStart1.AddHours(8);
             TimeOnly shiftStart3 = shiftStart2.AddHours(8);
 
-            ShiftSchedule morningShift = new ShiftSchedule { ShiftID = 1, ShiftName = "Morning",ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart1.AddHours(8) };
+            ShiftSchedule morningShift = new ShiftSchedule { ShiftID = 1, ShiftName = "Morning", ShiftStartTime = shiftStart1, ShiftEndTime = shiftStart1.AddHours(8) };
             ShiftSchedule afternoonShift = new ShiftSchedule { ShiftID = 2, ShiftName = "Afternoon", ShiftStartTime = shiftStart2, ShiftEndTime = shiftStart2.AddHours(8) };
             ShiftSchedule nightShift = new ShiftSchedule { ShiftID = 3, ShiftName = "Night", ShiftStartTime = shiftStart3, ShiftEndTime = shiftStart3.AddHours(8) };
 
@@ -29,8 +29,8 @@ namespace TimeKeepingManagementDataService
             FixedSchedule.Add(nightShift);
 
             Employee admin = new Employee { EmployeeID = 0, ShiftID = 1, IsAdmin = true };
-            Employee employee1 = new Employee { EmployeeID = 1, ShiftID = 2, IsAdmin = false};
-            Employee employee2 = new Employee { EmployeeID = 2, ShiftID = 3, IsAdmin = false};
+            Employee employee1 = new Employee { EmployeeID = 1, ShiftID = 2, IsAdmin = false };
+            Employee employee2 = new Employee { EmployeeID = 2, ShiftID = 3, IsAdmin = false };
 
             dummyEmployee.Add(admin);
             dummyEmployee.Add(employee1);
@@ -61,16 +61,16 @@ namespace TimeKeepingManagementDataService
         {
             return dummyEmployee.FirstOrDefault(e => e.EmployeeID == employeeID);
         }
-        public ShiftSchedule? GetEmployeeShift(Employee employee)
+        public ShiftSchedule? GetEmployeeShift(int shiftID)
         {
-            return FixedSchedule.FirstOrDefault(s => s.ShiftID == employee.ShiftID);
+            return FixedSchedule.FirstOrDefault(s => s.ShiftID == shiftID);
         }
-        public TimeLogs? GetLastLog(int employeeID)
+        public TimeLogs? GetLastTimeIn(int employeeID)
         {
             return LoggedTimes.FirstOrDefault(l => l.EmployeeID == employeeID && l.TimeOut == null);
-        
+
         }
-        public List<TimeLogs> GetEmployeeLogs (int employeeID)
+        public List<TimeLogs> GetEmployeeLogs(int employeeID)
         {
             return LoggedTimes.FindAll(l => l.EmployeeID == employeeID);
         }
@@ -89,7 +89,64 @@ namespace TimeKeepingManagementDataService
         }
         public List<TimeLogs> GetAllLogs()
         {
-                       return LoggedTimes;
+            return LoggedTimes;
+        }
+
+        public List<Employee> GetEmployees()
+        {
+            return dummyEmployee;
+        }
+
+        public List<ShiftSchedule> GetShifts()
+        {
+            return FixedSchedule;
+        }
+
+        public List<TimeLogs> GetLatestEmployeeLogs()
+        {
+            return LoggedTimes
+                .GroupBy(l => l.EmployeeID)
+                .Select(g => g.OrderByDescending(l => l.Date)
+                               .ThenByDescending(l => l.TimeIn)
+                               .FirstOrDefault())
+                .Where(log => log != null)
+                .ToList()!;
+        }
+
+        public TimeLogs? GetLatestEmployeeLogByID(int employeeID)
+        {
+            return LoggedTimes
+                .Where(l => l.EmployeeID == employeeID)
+                .OrderByDescending(l => l.Date)
+                .ThenByDescending(l => l.TimeIn)
+                .FirstOrDefault();
+        }
+        public void AddShiftSchedule(ShiftSchedule shift)
+        {
+            FixedSchedule.Add(shift);
+        }
+        public int GenerateShiftID()
+        {
+            int newShiftID = FixedSchedule.Count > 0 ? FixedSchedule.Max(s => s.ShiftID) + 1 : 1;
+            return newShiftID;
+        }
+        public void UpdateShiftSchedule(ShiftSchedule shift)
+        {
+            var existingShift = FixedSchedule.FirstOrDefault(s => s.ShiftID == shift.ShiftID);
+            if (existingShift != null)
+            {
+                existingShift.ShiftName = shift.ShiftName;
+                existingShift.ShiftStartTime = shift.ShiftStartTime;
+                existingShift.ShiftEndTime = shift.ShiftEndTime;
+            }
+        }
+        public void DeleteShiftSchedule(int shiftID)
+        {
+            var shiftToRemove = FixedSchedule.FirstOrDefault(s => s.ShiftID == shiftID);
+            if (shiftToRemove != null)
+            {
+                FixedSchedule.Remove(shiftToRemove);
+            }
         }
     }
 }

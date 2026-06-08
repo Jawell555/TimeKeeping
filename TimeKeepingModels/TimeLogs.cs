@@ -12,7 +12,7 @@ namespace TimeKeepingModels
         public string ShiftName { get; set; }
         public DateOnly Date { get; set; }
         public DateTime TimeIn { get; set; }
-        public DateTime? TimeOut { get; set; }
+        public DateTime? TimeOut{ get; set; }
         public TimeSpan WorkingHours { get; set; }
         public TimeSpan LateHours { get; set; }
         public TimeSpan OvertimeHours { get; set; }

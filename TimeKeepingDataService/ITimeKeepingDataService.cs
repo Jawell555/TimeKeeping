@@ -13,13 +13,21 @@ namespace TimeKeepingManagementDataService
         void Add(ShiftSchedule shift);
         void Add(TimeLogs timeLog);
         Employee? GetEmployeeByID(int employeeID);
-        ShiftSchedule? GetEmployeeShift(Employee employee);
-        TimeLogs? GetLastLog(int employeeID);
+        ShiftSchedule? GetEmployeeShift(int shiftID);
+        TimeLogs? GetLastTimeIn(int employeeID);
         void UpdateTimeLog(TimeLogs log);
         bool AlreadyTimedIn(int employeeID);
         bool EmployeeExists(int Employee);
         List<TimeLogs> GetAllLogs();
         List<TimeLogs> GetEmployeeLogs(int employeeID);
+        List<Employee> GetEmployees();
+        List<ShiftSchedule> GetShifts();
+        List<TimeLogs> GetLatestEmployeeLogs();
+        TimeLogs? GetLatestEmployeeLogByID(int employeeID);
+        void AddShiftSchedule(ShiftSchedule shift);
+        int GenerateShiftID();
+        void UpdateShiftSchedule(ShiftSchedule shift);
+        void DeleteShiftSchedule(int shiftID);
 
     }
 }

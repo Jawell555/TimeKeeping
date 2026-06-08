@@ -24,7 +24,7 @@ namespace TimeKeepingManagementDataService
 
         private void AddSeeds()
         {
-            var existingShifts = RetrieveShifts();
+            var existingShifts = GetShifts();
             if (existingShifts.Count == 0)
             {
                 TimeOnly shiftStart1 = new TimeOnly(6, 0);
@@ -39,7 +39,7 @@ namespace TimeKeepingManagementDataService
                 Add(afternoonShift);
                 Add(nightShift);
             }
-            var existingEmployees = RetrieveEmployees();
+            var existingEmployees = GetEmployees();
             if (existingEmployees.Count == 0)
             {
                 Employee admin = new Employee { EmployeeID = 0, ShiftID = 1, IsAdmin = true };
@@ -51,7 +51,7 @@ namespace TimeKeepingManagementDataService
             }
 
         }
-        private List<ShiftSchedule> RetrieveShifts()
+        public List<ShiftSchedule> GetShifts()
         {
             var selectStatement = "SELECT * FROM dbo.ShiftSchedules";
             SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
@@ -73,7 +73,7 @@ namespace TimeKeepingManagementDataService
             return shifts;
         }
 
-        private List<Employee> RetrieveEmployees()
+        public List<Employee> GetEmployees()
         {
             var selectStatement = "SELECT * FROM dbo.Employees";
             SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
@@ -187,7 +187,7 @@ namespace TimeKeepingManagementDataService
                     ShiftName = reader.GetString(1),
                     Date = DateOnly.FromDateTime(reader.GetDateTime(2)),
                     TimeIn = reader.GetDateTime(3),
-                    TimeOut = reader.IsDBNull(4) ? (DateTime?) null : reader.GetDateTime(4),
+                    TimeOut = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
                     WorkingHours = reader.GetTimeSpan(5),
                     LateHours = reader.GetTimeSpan(6),
                     OvertimeHours = reader.GetTimeSpan(7),
@@ -218,12 +218,12 @@ namespace TimeKeepingManagementDataService
             return employee;
         }
 
-        public ShiftSchedule? GetEmployeeShift(Employee employee)
+        public ShiftSchedule? GetEmployeeShift(int shiftID)
         {
-            var SelectStatement = "SELECT * FROM dbo.ShiftSchedules WHERE ShiftID = @ShiftID";
+            var SelectStatement = "SELECT * FROM dbo.ShiftSchedules WHERE ShiftID = @shiftID";
             SqlCommand selectCommand = new SqlCommand(SelectStatement, _connection);
             _connection.Open();
-            selectCommand.Parameters.AddWithValue("@ShiftID", employee.ShiftID);
+            selectCommand.Parameters.AddWithValue("@shiftID", shiftID);
             SqlDataReader reader = selectCommand.ExecuteReader();
             var shift = new ShiftSchedule();
             while (reader.Read())
@@ -238,7 +238,7 @@ namespace TimeKeepingManagementDataService
 
         }
 
-        public TimeLogs? GetLastLog(int employeeID)
+        public TimeLogs? GetLastTimeIn(int employeeID)
         {
             var selectStatement = "SELECT * FROM TimeLogs WHERE EmployeeID = @EmployeeID  AND TimeOut IS NULL";
             SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
@@ -309,6 +309,106 @@ namespace TimeKeepingManagementDataService
             }
             _connection.Close();
             return logs;
+        }
+
+        public List<TimeLogs> GetLatestEmployeeLogs()
+        {
+            var selectStatement = "SELECT * FROM ( SELECT *, ROW_NUMBER() OVER (PARTITION BY EmployeeID ORDER BY [Date] DESC, TimeIn DESC) AS rn FROM TimeLogs) ranked WHERE rn = 1 ORDER BY EmployeeID;";
+            SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
+            _connection.Open();
+            SqlDataReader reader = selectCommand.ExecuteReader();
+            var logs = new List<TimeLogs>();
+            while (reader.Read())
+            {
+                TimeLogs log = new TimeLogs
+                {
+                    EmployeeID = reader.GetInt32(0),
+                    ShiftName = reader.GetString(1),
+                    Date = DateOnly.FromDateTime(reader.GetDateTime(2)),
+                    TimeIn = reader.GetDateTime(3),
+                    TimeOut = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4),
+                    WorkingHours = reader.GetTimeSpan(5),
+                    LateHours = reader.GetTimeSpan(6),
+                    OvertimeHours = reader.GetTimeSpan(7),
+                    UndertimeHours = reader.GetTimeSpan(8)
+                };
+                logs.Add(log);
+            }
+            _connection.Close();
+            return logs;
+        }
+
+        public TimeLogs? GetLatestEmployeeLogByID(int employeeID)
+        {
+            var selectStatement = "SELECT TOP 1 * FROM TimeLogs WHERE EmployeeID = @EmployeeID ORDER BY Date DESC, TimeIn DESC;";
+            SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
+            selectCommand.Parameters.AddWithValue("@EmployeeID", employeeID);
+            _connection.Open();
+            SqlDataReader reader = selectCommand.ExecuteReader();
+            var log = new TimeLogs();
+            if (!reader.Read())
+            {
+                _connection.Close();
+                return null;
+            }
+
+            log.EmployeeID = reader.GetInt32(0);
+            log.ShiftName = reader.GetString(1);
+            log.Date = DateOnly.FromDateTime(reader.GetDateTime(2));
+            log.TimeIn = reader.GetDateTime(3);
+            log.TimeOut = reader.IsDBNull(4) ? (DateTime?)null : reader.GetDateTime(4);
+            log.WorkingHours = reader.GetTimeSpan(5);
+            log.LateHours = reader.GetTimeSpan(6);
+            log.OvertimeHours = reader.GetTimeSpan(7);
+            log.UndertimeHours = reader.GetTimeSpan(8);
+
+
+            _connection.Close();
+            return log;
+
+        }
+        public void AddShiftSchedule(ShiftSchedule shift)
+        {
+            var insertStatement = "INSERT INTO dbo.ShiftSchedules (ShiftID, ShiftName, ShiftStartTime, ShiftEndTime) VALUES (@ShiftID, @ShiftName, @ShiftStartTime, @ShiftEndTime)";
+            SqlCommand insertCommand = new SqlCommand(insertStatement, _connection);
+            insertCommand.Parameters.AddWithValue("@ShiftID", shift.ShiftID);
+            insertCommand.Parameters.AddWithValue("@ShiftName", shift.ShiftName);
+            insertCommand.Parameters.AddWithValue("@ShiftStartTime", shift.ShiftStartTime);
+            insertCommand.Parameters.AddWithValue("@ShiftEndTime", shift.ShiftEndTime);
+            _connection.Open();
+            insertCommand.ExecuteNonQuery();
+            _connection.Close();
+        }
+        public int GenerateShiftID()
+        {
+            var selectStatement = "SELECT MAX(ShiftID) FROM dbo.ShiftSchedules";
+            SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
+            _connection.Open();
+            var maxID = selectCommand.ExecuteScalar();
+            _connection.Close();
+            int newID = (maxID != DBNull.Value) ? Convert.ToInt32(maxID) + 1 : 1;
+            return newID;
+        }
+        public void UpdateShiftSchedule(ShiftSchedule shift)
+        {
+            var updateStatement = "UPDATE dbo.ShiftSchedules SET ShiftName = @ShiftName, ShiftStartTime = @ShiftStartTime, ShiftEndTime = @ShiftEndTime WHERE ShiftID = @ShiftID";
+            SqlCommand updateCommand = new SqlCommand(updateStatement, _connection);
+            updateCommand.Parameters.AddWithValue("@ShiftName", shift.ShiftName);
+            updateCommand.Parameters.AddWithValue("@ShiftStartTime", shift.ShiftStartTime);
+            updateCommand.Parameters.AddWithValue("@ShiftEndTime", shift.ShiftEndTime);
+            updateCommand.Parameters.AddWithValue("@ShiftID", shift.ShiftID);
+            _connection.Open();
+            updateCommand.ExecuteNonQuery();
+            _connection.Close();
+        }
+        public void DeleteShiftSchedule(int shiftID)
+        {
+            var deleteStatement = "DELETE FROM dbo.ShiftSchedules WHERE ShiftID = @ShiftID";
+            SqlCommand deleteCommand = new SqlCommand(deleteStatement, _connection);
+            deleteCommand.Parameters.AddWithValue("@ShiftID", shiftID);
+            _connection.Open();
+            deleteCommand.ExecuteNonQuery();
+            _connection.Close();
         }
     }
 }

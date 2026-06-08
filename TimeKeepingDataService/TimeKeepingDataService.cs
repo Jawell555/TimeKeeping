@@ -28,15 +28,15 @@ namespace TimeKeepingManagementDataService
         }
         public Employee? GetEmployeeByID(int employeeID)
         {
-                return _dataService.GetEmployeeByID(employeeID);
+            return _dataService.GetEmployeeByID(employeeID);
         }
-        public ShiftSchedule? GetEmployeeShift(Employee employee)
+        public ShiftSchedule? GetEmployeeShift(int employeeID)
         {
-            return _dataService.GetEmployeeShift(employee);
+            return _dataService.GetEmployeeShift(employeeID);
         }
-        public TimeLogs? GetLastLog(int employeeID)
+        public TimeLogs? GetLastTimeIn(int employeeID)
         {
-            return _dataService.GetLastLog(employeeID);
+            return _dataService.GetLastTimeIn(employeeID);
         }
         public void UpdateTimeLog(TimeLogs log)
         {
@@ -54,9 +54,41 @@ namespace TimeKeepingManagementDataService
         {
             return _dataService.GetAllLogs();
         }
-       public  List<TimeLogs> GetEmployeeLogs(int employeeID)
+        public List<TimeLogs> GetEmployeeLogs(int employeeID)
         {
             return _dataService.GetEmployeeLogs(employeeID);
+        }
+        public List<Employee> GetEmployees()
+        {
+            return _dataService.GetEmployees();
+        }
+        public List<ShiftSchedule> GetShifts()
+        {
+            return _dataService.GetShifts();
+        }
+        public List<TimeLogs> GetLatestEmployeeLogs()
+        {
+            return _dataService.GetLatestEmployeeLogs();
+        }
+        public TimeLogs? GetLatestEmployeeLogByID(int employeeID)
+        {
+            return _dataService.GetLatestEmployeeLogByID(employeeID);
+        }
+        public void AddShiftSchedule(ShiftSchedule shift)
+        {
+            _dataService.AddShiftSchedule(shift);
+        }
+        public int GenerateShiftID()
+        {
+            return _dataService.GenerateShiftID();
+        }
+        public void UpdateShiftSchedule(ShiftSchedule shift)
+        {
+            _dataService.UpdateShiftSchedule(shift);
+        }
+        public void DeleteShiftSchedule(int shiftID)
+        {
+            _dataService.DeleteShiftSchedule(shiftID);
         }
     }
 }
