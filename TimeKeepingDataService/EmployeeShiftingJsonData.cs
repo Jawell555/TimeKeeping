@@ -223,5 +223,10 @@ namespace TimeKeepingManagementDataService
                 SaveShiftDataToJsonFiles();
             }
         }
+        public bool ShiftExists(int shiftID)
+        {
+            RetrieveShiftingDataFromJsonFile();
+            return ShiftSchedules.Any(s => s.ShiftID == shiftID);
+        }
     }
 }

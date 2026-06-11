@@ -148,5 +148,9 @@ namespace TimeKeepingManagementDataService
                 FixedSchedule.Remove(shiftToRemove);
             }
         }
+        public bool ShiftExists(int shiftID)
+        {
+            return FixedSchedule.Any(s => s.ShiftID == shiftID);
+        }
     }
 }

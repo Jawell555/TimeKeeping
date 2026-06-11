@@ -90,5 +90,9 @@ namespace TimeKeepingManagementDataService
         {
             _dataService.DeleteShiftSchedule(shiftID);
         }
+        public bool ShiftExists(int shiftID)
+        {
+            return _dataService.ShiftExists(shiftID);
+        }
     }
 }

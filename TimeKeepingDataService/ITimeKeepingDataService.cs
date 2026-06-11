@@ -28,6 +28,7 @@ namespace TimeKeepingManagementDataService
         int GenerateShiftID();
         void UpdateShiftSchedule(ShiftSchedule shift);
         void DeleteShiftSchedule(int shiftID);
+        bool ShiftExists(int shiftID);
 
     }
 }

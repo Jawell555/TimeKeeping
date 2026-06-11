@@ -19,9 +19,9 @@ namespace TimeKeepingAppService
         {
             return timeKeepingDataService.GetEmployeeByID(employeeID);
         }
-        public ShiftSchedule? GetShiftSchedule(int employeeID)
+        public ShiftSchedule? GetEmployeeSchedule(int shiftID)
         {
-            return timeKeepingDataService.GetEmployeeShift(employeeID);
+            return timeKeepingDataService.GetEmployeeShift(shiftID);
         }
         public List<Employee> GetAllEmployees()
         {
@@ -112,6 +112,10 @@ namespace TimeKeepingAppService
         public void DeleteShiftSchedule(int shiftID)
         {
             timeKeepingDataService.DeleteShiftSchedule(shiftID);
+        }
+        public bool ShiftExists(int shiftID)
+        {
+            return timeKeepingDataService.ShiftExists(shiftID);
         }
     }
 }

@@ -171,6 +171,18 @@ namespace TimeKeepingManagementDataService
             _connection.Close();
             return rows > 0;
         }
+        public bool ShiftExists(int shiftID)
+        {
+            var selectStatement = "SELECT COUNT(*) FROM dbo.ShiftSchedules WHERE ShiftID = @ShiftID";
+            SqlCommand selectCommand = new SqlCommand(selectStatement, _connection);
+
+            _connection.Open();
+            selectCommand.Parameters.AddWithValue("@ShiftID", shiftID);
+            var rows = Convert.ToInt32(selectCommand.ExecuteScalar());
+
+            _connection.Close();
+            return rows > 0;
+        }
 
         public List<TimeLogs> GetAllLogs()
         {
@@ -235,7 +247,6 @@ namespace TimeKeepingManagementDataService
             }
             _connection.Close();
             return shift;
-
         }
 
         public TimeLogs? GetLastTimeIn(int employeeID)
