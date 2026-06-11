@@ -138,11 +138,6 @@ internal class Program
             }
             Console.WriteLine("Invalid format. Use MM-dd-yyyy (e.g., 12-31-2024)\n");
         }
-
-
-
-
-
     }
     static int EmployeeIdValidation()
     {
