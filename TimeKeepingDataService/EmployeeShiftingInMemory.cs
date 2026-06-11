@@ -152,5 +152,9 @@ namespace TimeKeepingManagementDataService
         {
             return FixedSchedule.Any(s => s.ShiftID == shiftID);
         }
+        public List<TimeLogs> GetTimeLogsByDate(DateOnly date)
+        {
+            return LoggedTimes.Where(l => l.Date == date).ToList();
+        }
     }
 }

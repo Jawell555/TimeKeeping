@@ -228,5 +228,10 @@ namespace TimeKeepingManagementDataService
             RetrieveShiftingDataFromJsonFile();
             return ShiftSchedules.Any(s => s.ShiftID == shiftID);
         }
+        public List<TimeLogs> GetTimeLogsByDate(DateOnly date)
+        {
+            RetrieveTimeLogsFromJsonFile();
+            return TimeInOutLogs.Where(l => l.Date == date).ToList();
+        }
     }
 }

@@ -94,5 +94,9 @@ namespace TimeKeepingManagementDataService
         {
             return _dataService.ShiftExists(shiftID);
         }
+        public List<TimeLogs> GetTimeLogsByDate(DateOnly date)
+        {
+            return _dataService.GetTimeLogsByDate(date);
+        }
     }
 }

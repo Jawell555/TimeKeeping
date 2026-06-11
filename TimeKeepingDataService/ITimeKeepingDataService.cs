@@ -29,6 +29,6 @@ namespace TimeKeepingManagementDataService
         void UpdateShiftSchedule(ShiftSchedule shift);
         void DeleteShiftSchedule(int shiftID);
         bool ShiftExists(int shiftID);
-
+        List<TimeLogs> GetTimeLogsByDate(DateOnly date);
     }
 }

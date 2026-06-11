@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Data;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 using System.Xml.Serialization;
 using TimeKeepingAppService;
 using TimeKeepingModels;
@@ -33,17 +34,18 @@ internal class Program
             if (isAdmin)
             {
                 Console.WriteLine("4. View All Logs" +
-                    "\n5. View Latest Logs" +
-                    "\n6. View Latest Employee Log" +
-                    "\n7. View Shift Schedule" +
-                    "\n8. Add Shift Schedule" +
-                    "\n9. Update Shift Schedule" +
-                    "\n10. Delete Shift Schedule");
+                    "\n5. View Time Logs By Date" +
+                    "\n6. View Latest Logs" +
+                    "\n7. View Latest Employee Log" +
+                    "\n8. View Shift Schedule" +
+                    "\n9. Add Shift Schedule" +
+                    "\n10. Update Shift Schedule" +
+                    "\n11. Delete Shift Schedule");
             }
 
-            Console.WriteLine("11. Back");
-            Console.WriteLine("12. Exit");
-            Console.Write("Select Option(1-12): ");
+            Console.WriteLine("12. Back");
+            Console.WriteLine("13. Exit");
+            Console.Write("Select Option(1-13): ");
 
             int choice = IsValidChoice();
             ChoiceSwitch(choice, isAdmin);
@@ -64,8 +66,9 @@ internal class Program
             8 => isAdmin,
             9 => isAdmin,
             10 => isAdmin,
-            11 => false,
+            11 => isAdmin,
             12 => false,
+            13 => false,
         };
 
     }
@@ -109,6 +112,37 @@ internal class Program
 
             Console.WriteLine("Invalid format. Use hh:mm AM/PM or HH:mm (e.g., 09:30 AM, 09:30 PM, or 21:30)\n");
         }
+    }
+    static DateOnly GetValidDate(string prompt)
+    {
+        string[] formats = {
+        "MM/dd/yyyy",      // 12/31/2024
+        "M/d/yyyy",        // 1/5/2024
+        "MM-dd-yyyy",      // 12-31-2024
+        "M-d-yyyy",        // 1-5-2024
+        "yyyy/MM/dd",      // 2024/12/31
+        "yyyy-MM-dd"       // 2024-12-31
+    };
+        while (true)
+        {
+            Console.Write(prompt);
+            string input = Console.ReadLine()?.Trim();
+            if (string.IsNullOrEmpty(input))
+            {
+                Console.WriteLine("Input cannot be empty. Try again.\n");
+                continue;
+            }
+            if (DateOnly.TryParseExact(input, formats, null, System.Globalization.DateTimeStyles.None, out DateOnly result))
+            {
+                return result;
+            }
+            Console.WriteLine("Invalid format. Use MM-dd-yyyy (e.g., 12-31-2024)\n");
+        }
+
+
+
+
+
     }
     static int EmployeeIdValidation()
     {
@@ -336,18 +370,36 @@ internal class Program
         }
         Console.WriteLine($"Employee ID: {log.EmployeeID}, \nDate: {log.Date}, \nShift: {log.ShiftName}, \nTime In: {log.TimeIn:HH\\:mm}, \nTime Out: {(log.TimeOut != (DateTime?)null ? (log.TimeOut) : "Ongoing")}, \nWorking Hours: {log.WorkingHours:hh\\:mm\\:ss}, \nLate: {log.LateHours:hh\\:mm\\:ss}, \nOT: {log.OvertimeHours:hh\\:mm\\:ss}\n");
     }
+    static void ViewTimeLogsByDate()
+    {
+            Console.WriteLine("\n-----VIEW TIME LOGS BY DATE-----");
+            DateOnly date = GetValidDate("Enter Date to View Logs (MM-dd-yyyy): ");
+            var logsByDate = appService.GetTimeLogsByDate(date);
+            if (!logsByDate.Any())
+            {
+                Console.WriteLine("No logs to display for this date.\n");
+                return;
+            }
+            foreach (var l in logsByDate)
+            {
+                Console.WriteLine($"Employee ID: {l.EmployeeID}, \nDate: {l.Date}, \nShift: {l.ShiftName}, \nTime In: {l.TimeIn:HH\\:mm}, \nTime Out: {(l.TimeOut != (DateTime?)null ? (l.TimeOut) : "Ongoing")}, \nWorking Hours: {l.WorkingHours:hh\\:mm\\:ss}, \nLate: {l.LateHours:hh\\:mm\\:ss}, \nOT: {l.OvertimeHours:hh\\:mm\\:ss}\n");
+            }
+            Console.WriteLine("---------------------\n");
+            return;
+        
+    }
     static void ChoiceSwitch(int choice, bool isAdmin)
     {
         switch (choice)
         {
-            case 12:
+            case 13:
                 Console.WriteLine("Exiting the system. Goodbye!");
                 Environment.Exit(0);
                 break;
-            case 11:
+            case 12:
                 Console.WriteLine("Successfully Returned to Main Menu.");
                 break;
-            case 10:
+            case 11:
                 if (isAdmin)
                 {
                     DeleteShiftSchedule();
@@ -357,7 +409,7 @@ internal class Program
                     Console.WriteLine("Invalid Selection. Try Again.");
                 }
                 break;
-            case 9:
+            case 10:
                 if (isAdmin)
                 {
                     UpdateShiftSchedule();
@@ -367,7 +419,7 @@ internal class Program
                     Console.WriteLine("Invalid Selection. Try Again.");
                 }
                 break;
-            case 8:
+            case 9:
                 if (isAdmin)
                 {
                     AddShiftSchedule();
@@ -377,7 +429,7 @@ internal class Program
                     Console.WriteLine("Invalid Selection. Try Again.");
                 }
                 break;
-            case 7:
+            case 8:
                 if (isAdmin)
                 {
                     PrintAllSchedules();
@@ -388,7 +440,7 @@ internal class Program
                 }
                 break;
 
-            case 6:
+            case 7:
                 if (isAdmin)
                 {
                     GetLatestEmployeeLog();
@@ -399,10 +451,20 @@ internal class Program
                 }
                 break;
 
-            case 5:
+            case 6:
                 if (isAdmin)
                 {
                     GetLatestLogs();
+                }
+                else
+                {
+                    Console.WriteLine("Invalid Selection. Try Again.");
+                }
+                break;
+            case 5:
+                if (isAdmin)
+                {
+                    ViewTimeLogsByDate();
                 }
                 else
                 {

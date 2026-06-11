@@ -117,5 +117,9 @@ namespace TimeKeepingAppService
         {
             return timeKeepingDataService.ShiftExists(shiftID);
         }
+        public List<TimeLogs> GetTimeLogsByDate(DateOnly date)
+        {
+            return timeKeepingDataService.GetTimeLogsByDate(date);
+        }
     }
 }
